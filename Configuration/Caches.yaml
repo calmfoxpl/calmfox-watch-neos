@@ -1,0 +1,14 @@
+#
+# Pamięć podręczna pakietu. Jeden magazyn na wszystko, co drogie: payload obu
+# sekcji, wynik sprawdzenia poczty, stan klastra wyszukiwarki i rozmiar
+# instalacji. Czasy życia ustawiamy przy każdym zapisie osobno, bo różnią się
+# o dwa rzędy wielkości (60 sekund kontra doba).
+#
+# Świadomie NIE podajemy tu mechanizmu składowania. Dzięki temu magazyn
+# dziedziczy ustawienie „Default" tej instalacji: na stronie z Redisem check
+# flow_cache naprawdę odpyta Redis, a na hostingu plikowym pliki. Gdybyśmy
+# przypięli tu FileBackend, check zawsze mówiłby „działa" o mechanizmie,
+# z którego strona wcale nie korzysta.
+#
+Calmfox_Watch_Payload:
+  frontend: Neos\Cache\Frontend\VariableFrontend

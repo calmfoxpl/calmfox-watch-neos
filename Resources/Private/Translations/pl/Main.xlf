@@ -1,0 +1,217 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  Teksty modułu po polsku. Polski jest tu językiem źródłowym: szablony trzymają
+  polską treść jako wartość domyślną, więc nawet bez katalogu tłumaczeń panel
+  mówi po polsku. Ten plik istnieje po to, żeby dało się teksty poprawiać bez
+  wchodzenia w szablony.
+-->
+<xliff version="1.2" xmlns="urn:oasis:names:tc:xliff:document:1.2">
+	<file original="" product-name="Calmfox.Watch" source-language="pl" target-language="pl" datatype="plaintext">
+		<body>
+			<trans-unit id="module.title">
+				<source>Calmfox Watch</source>
+				<target>Calmfox Watch</target>
+			</trans-unit>
+			<trans-unit id="intro">
+				<source>Monitoring wnętrza strony.</source>
+				<target>Monitoring wnętrza strony: dostępność usług (baza danych, poczta, dysk, pamięć podręczna, publikacja zasobów, repozytorium treści), podstawowa higiena bezpieczeństwa i historia zmian wersji pakietów. Wyniki znajdziesz w panelu Calmfox Watch.</target>
+			</trans-unit>
+			<trans-unit id="warning.http">
+				<source>Strona działa po protokole HTTP.</source>
+				<target>Strona działa po protokole HTTP, a Calmfox Watch łączy się wyłącznie z adresami HTTPS. Włącz certyfikat SSL, aby nawiązać połączenie.</target>
+			</trans-unit>
+			<trans-unit id="warning.loopback">
+				<source>Adres kontrolny nie odpowiada z serwera.</source>
+				<target>Sprawdzenie wykonane z serwera nie dociera do adresu kontrolnego pakietu ({0}). Jeżeli połączenie się nie powiedzie, sprawdź, czy trasa pakietu jest wpięta w Configuration/Routes.yaml projektu i czy zapora sieciowa nie blokuje tej ścieżki.</target>
+			</trans-unit>
+			<trans-unit id="status.title">
+				<source>Połączono z Calmfox Watch</source>
+				<target>Połączono z Calmfox Watch</target>
+			</trans-unit>
+			<trans-unit id="status.site">
+				<source>Strona {0}, pakiet {1}.</source>
+				<target>Strona {0}, pakiet {1}.</target>
+			</trans-unit>
+			<trans-unit id="status.lastPoll">
+				<source>Ostatnie odpytanie monitoringu:</source>
+				<target>Ostatnie odpytanie monitoringu:</target>
+			</trans-unit>
+			<trans-unit id="status.noPoll">
+				<source>Monitoring jeszcze nie odpytał adresu kontrolnego.</source>
+				<target>Monitoring jeszcze nie odpytał adresu kontrolnego, pierwsze sprawdzenie w ciągu kilku minut.</target>
+			</trans-unit>
+			<trans-unit id="action.openPanel">
+				<source>Otwórz tę stronę w panelu</source>
+				<target>Otwórz tę stronę w panelu</target>
+			</trans-unit>
+			<trans-unit id="action.rotate">
+				<source>Wymień klucz</source>
+				<target>Wymień klucz</target>
+			</trans-unit>
+			<trans-unit id="action.refresh">
+				<source>Przelicz sprawdzenia</source>
+				<target>Przelicz sprawdzenia</target>
+			</trans-unit>
+			<trans-unit id="action.disconnect">
+				<source>Rozłącz</source>
+				<target>Rozłącz</target>
+			</trans-unit>
+			<trans-unit id="checks.empty">
+				<source>Brak sprawdzeń do pokazania.</source>
+				<target>Brak sprawdzeń do pokazania.</target>
+			</trans-unit>
+			<trans-unit id="checks.fix">
+				<source>Jak naprawić</source>
+				<target>Jak naprawić</target>
+			</trans-unit>
+			<trans-unit id="checks.command.note">
+				<source>Przykład do wykonania na serwerze, w katalogu strony. Sprawdź go u siebie przed użyciem.</source>
+				<target>Przykład do wykonania na serwerze, w katalogu strony. Sprawdź go u siebie przed użyciem.</target>
+			</trans-unit>
+			<trans-unit id="quota.title">
+				<source>Limit dysku na koncie hostingowym</source>
+				<target>Limit dysku na koncie hostingowym</target>
+			</trans-unit>
+			<trans-unit id="quota.label">
+				<source>Limit w gigabajtach</source>
+				<target>Limit w gigabajtach</target>
+			</trans-unit>
+			<trans-unit id="quota.save">
+				<source>Zapisz limit</source>
+				<target>Zapisz limit</target>
+			</trans-unit>
+			<trans-unit id="quota.help">
+				<source>Limit znajdziesz w panelu hostingu.</source>
+				<target>Znajdziesz go w panelu hostingu albo w umowie. Zostaw puste, jeśli nie wiesz. Wtedy pokazujemy tylko rozmiar instalacji, bez zgadywania.</target>
+			</trans-unit>
+			<trans-unit id="updates.missing">
+				<source>Nie sprawdzamy zaległych aktualizacji.</source>
+				<target>Nie sprawdzamy zaległych aktualizacji: nikt jeszcze nie uruchomił polecenia ./flow calmfoxwatch:updates. Dodaj je do zadań cyklicznych raz na dobę, a zaczniemy pilnować.</target>
+			</trans-unit>
+			<trans-unit id="history.title">
+				<source>Historia zmian wersji</source>
+				<target>Historia zmian wersji</target>
+			</trans-unit>
+			<trans-unit id="history.note">
+				<source>Historia zbierana od instalacji pakietu.</source>
+				<target>Zbierana od instalacji pakietu. Data oznacza czas wykrycia zmiany, nie czas wdrożenia: pakiety wymienia Composer poza aplikacją, więc porównujemy wersje przy okazji sprawdzeń bezpieczeństwa.</target>
+			</trans-unit>
+			<trans-unit id="history.removed">
+				<source>pakiet usunięty</source>
+				<target>pakiet usunięty</target>
+			</trans-unit>
+			<trans-unit id="history.empty">
+				<source>Brak wpisów.</source>
+				<target>Brak wpisów. Pierwszy pojawi się przy najbliższej zmianie wersji pakietu.</target>
+			</trans-unit>
+			<trans-unit id="status.ok"><source>działa</source></trans-unit>
+			<trans-unit id="status.warn"><source>uwaga</source></trans-unit>
+			<trans-unit id="status.fail"><source>awaria</source></trans-unit>
+			<trans-unit id="status.unknown"><source>brak danych</source></trans-unit>
+			<trans-unit id="welcome.title"><source>Dziękujemy, strona jest połączona</source></trans-unit>
+			<trans-unit id="welcome.lead"><source>Od tej chwili patrzymy do środka: usługi, konta z pełnymi uprawnieniami i zmiany wersji pakietów. Pierwsze odpytanie monitoringu przyjdzie w ciągu kilku minut, a wyniki zobaczysz niżej i w panelu Calmfox Watch.</source></trans-unit>
+			<trans-unit id="tile.connection"><source>Połączenie z monitoringiem</source></trans-unit>
+			<trans-unit id="tile.connection.on"><source>aktywne</source></trans-unit>
+			<trans-unit id="tile.connection.off"><source>brak</source></trans-unit>
+			<trans-unit id="tile.context"><source>Tryb pracy aplikacji</source></trans-unit>
+			<trans-unit id="tile.updates"><source>Zaległe aktualizacje pakietów</source></trans-unit>
+			<trans-unit id="tile.updates.never"><source>nie sprawdzono</source></trans-unit>
+			<trans-unit id="action.checkUpdates"><source>Sprawdź teraz</source></trans-unit>
+			<trans-unit id="setup.connect.title"><source>Połącz przez Calmfox Watch</source></trans-unit>
+			<trans-unit id="setup.connect.lead"><source>Najprostsza droga: przechodzisz do panelu, logujesz się albo zakładasz konto, wybierasz organizację, a my wracamy tutaj i łączymy stronę bez przepisywania kluczy.</source></trans-unit>
+			<trans-unit id="setup.connect.submit"><source>Połącz przez Calmfox Watch</source></trans-unit>
+			<trans-unit id="setup.free.title">
+				<source>Nie mam konta, załóż pakiet Free</source>
+				<target>Nie mam konta, załóż pakiet Free</target>
+			</trans-unit>
+			<trans-unit id="setup.free.lead">
+				<source>Konto zakładamy od razu.</source>
+				<target>Konto zakładamy od razu: monitoring dostępności strony, certyfikatu SSL i stanu Neosa. Bez hasła, logowanie linkiem wysyłanym na adres e-mail.</target>
+			</trans-unit>
+			<trans-unit id="setup.free.email">
+				<source>Adres e-mail właściciela</source>
+				<target>Adres e-mail właściciela</target>
+			</trans-unit>
+			<trans-unit id="setup.free.consent">
+				<source>Zgoda na przekazanie danych.</source>
+				<target>Zgadzam się na przekazanie adresu e-mail i domeny strony do Calmfox w celu założenia konta monitoringu.</target>
+			</trans-unit>
+			<trans-unit id="setup.free.submit">
+				<source>Aktywuj pakiet Free</source>
+				<target>Aktywuj pakiet Free</target>
+			</trans-unit>
+			<trans-unit id="setup.pair.title">
+				<source>Mam już konto, połącz kluczem</source>
+				<target>Mam już konto, połącz kluczem</target>
+			</trans-unit>
+			<trans-unit id="setup.pair.lead">
+				<source>Klucz instalacyjny skopiujesz z panelu.</source>
+				<target>Klucz instalacyjny skopiujesz z ekranu Integracje w panelu Calmfox Watch.</target>
+			</trans-unit>
+			<trans-unit id="setup.pair.token">
+				<source>Klucz instalacyjny</source>
+				<target>Klucz instalacyjny</target>
+			</trans-unit>
+			<trans-unit id="setup.pair.submit">
+				<source>Połącz</source>
+				<target>Połącz</target>
+			</trans-unit>
+			<trans-unit id="setup.cli">
+				<source>Wdrożenia bez klikania.</source>
+				<target>Wdrożenia bez klikania: ./flow calmfoxwatch:register adres@example.com albo ./flow calmfoxwatch:pair fxp_live_...</target>
+			</trans-unit>
+			<trans-unit id="footer.apiUrl">
+				<source>Adres API: {0}</source>
+				<target>Adres API: {0}</target>
+			</trans-unit>
+			<trans-unit id="plan.freeTitle">
+				<source>Pakiet Free, co dokłada wyższy próg</source>
+				<target>Pakiet Free, co dokłada wyższy próg</target>
+			</trans-unit>
+			<trans-unit id="plan.freeIntro">
+				<source>Na Free pilnujemy dostępności strony, certyfikatu i stanu usług. Wyższe pakiety dokładają to, czego Free nie obejmuje:</source>
+				<target>Na Free pilnujemy dostępności strony, certyfikatu i stanu usług. Wyższe pakiety dokładają to, czego Free nie obejmuje:</target>
+			</trans-unit>
+			<trans-unit id="plan.item1">
+				<source>sondy co 30 do 60 sekund zamiast co 5 minut, awarię widać od razu, nie po kwadransie</source>
+				<target>sondy co 30 do 60 sekund zamiast co 5 minut, awarię widać od razu, nie po kwadransie</target>
+			</trans-unit>
+			<trans-unit id="plan.item2">
+				<source>przegląd podstron: urwane treści, błędy 404 i zepsute odnośniki, zanim zauważy je odwiedzający</source>
+				<target>przegląd podstron: urwane treści, błędy 404 i zepsute odnośniki, zanim zauważy je odwiedzający</target>
+			</trans-unit>
+			<trans-unit id="plan.item3">
+				<source>monitoring wybranych podstron i formularzy, nie tylko strony głównej</source>
+				<target>monitoring wybranych podstron i formularzy, nie tylko strony głównej</target>
+			</trans-unit>
+			<trans-unit id="plan.item4">
+				<source>powiadomienia SMS-em, w komunikatorze i w aplikacji, bez miesięcznego limitu</source>
+				<target>powiadomienia SMS-em, w komunikatorze i w aplikacji, bez miesięcznego limitu</target>
+			</trans-unit>
+			<trans-unit id="plan.item5">
+				<source>raporty okresowe i dłuższa historia zdarzeń</source>
+				<target>raporty okresowe i dłuższa historia zdarzeń</target>
+			</trans-unit>
+			<trans-unit id="plan.freeCta">
+				<source>Zobacz pakiety dla tej strony</source>
+				<target>Zobacz pakiety dla tej strony</target>
+			</trans-unit>
+			<trans-unit id="plan.freeNote">
+				<source>Pakiet kupujesz w panelu, kartą, osobno dla każdej strony.</source>
+				<target>Pakiet kupujesz w panelu, kartą, osobno dla każdej strony.</target>
+			</trans-unit>
+			<trans-unit id="plan.paidTitle">
+				<source>Pakiet i płatności</source>
+				<target>Pakiet i płatności</target>
+			</trans-unit>
+			<trans-unit id="plan.paidText">
+				<source>Ta strona jest w pakiecie {0} (stan z chwili połączenia, bieżący pakiet i płatności zobaczysz w panelu).</source>
+				<target>Ta strona jest w pakiecie {0} (stan z chwili połączenia, bieżący pakiet i płatności zobaczysz w panelu).</target>
+			</trans-unit>
+			<trans-unit id="plan.paidCta">
+				<source>Zarządzaj pakietem i płatnościami</source>
+				<target>Zarządzaj pakietem i płatnościami</target>
+			</trans-unit>
+		</body>
+	</file>
+</xliff>

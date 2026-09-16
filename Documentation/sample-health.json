@@ -1,0 +1,104 @@
+{
+    "schema": 1,
+    "plugin": "1.3.1",
+    "status": "warn",
+    "checks": [
+        {
+            "id": "db",
+            "status": "ok",
+            "label": "Baza danych",
+            "detail": null,
+            "fix": null,
+            "command": null,
+            "ms": 3
+        },
+        {
+            "id": "disk",
+            "status": "ok",
+            "label": "Miejsce na dysku",
+            "detail": "Sama instalacja zajmuje 4,1 GB z podanego limitu konta 20 GB (20%). Poza tym miejsce zajmują poczta i pozostałe strony na koncie.",
+            "fix": null,
+            "command": null,
+            "ms": null
+        },
+        {
+            "id": "smtp",
+            "status": "ok",
+            "label": "Wysyłka e-mail (SMTP)",
+            "detail": "Serwer smtp.example.com:587 odpowiada poprawnie. To sprawdzenie połączenia, nie doręczenia wiadomości.",
+            "fix": null,
+            "command": null,
+            "ms": 84
+        },
+        {
+            "id": "flow_cache",
+            "status": "ok",
+            "label": "Pamięć podręczna Flow (Redis)",
+            "detail": null,
+            "fix": null,
+            "command": null,
+            "ms": 2
+        },
+        {
+            "id": "resources",
+            "status": "ok",
+            "label": "Publikacja zasobów strony",
+            "detail": "Katalog publikacji Web/_Resources jest zapisywalny.",
+            "fix": null,
+            "command": null,
+            "ms": null
+        },
+        {
+            "id": "content_repository",
+            "status": "ok",
+            "label": "Repozytorium treści",
+            "detail": "Aktywnych stron: 1. Węzłów treści w gałęzi live: 1842.",
+            "fix": null,
+            "command": null,
+            "ms": 11
+        },
+        {
+            "id": "queue",
+            "status": "warn",
+            "label": "Kolejki zadań",
+            "detail": "Zadań zakończonych błędem: 2, oczekujących: 17. Zadania z błędem nie wykonają się same.",
+            "fix": null,
+            "command": null,
+            "ms": 6
+        },
+        {
+            "id": "elasticsearch",
+            "status": "ok",
+            "label": "Wyszukiwarka Elasticsearch",
+            "detail": "Klaster w pełni sprawny.",
+            "fix": null,
+            "command": null,
+            "ms": 39
+        }
+    ],
+    "site": {
+        "wp": "8.3.14",
+        "php": "8.3.14",
+        "plugin": "1.3.1",
+        "updates": {
+            "core": 0,
+            "plugins": 3,
+            "themes": 0
+        }
+    },
+    "signals": {
+        "adminCount": 3,
+        "adminsFingerprint": "db05df3fa61da04a975207976786e2c1",
+        "newestAdminAt": "2026-08-01T10:00:00+00:00",
+        "pluginCount": 6,
+        "pluginsFingerprint": "baac6ad8c718e5a285e7c8e6b48c764e",
+        "activePlugins": [
+            "calmfox/watch-neos",
+            "flowpack/searchplugin",
+            "neos/neos",
+            "neos/redirecthandler",
+            "neos/seo",
+            "vendor/site"
+        ]
+    }
+}

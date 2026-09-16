@@ -1,0 +1,58 @@
+{namespace neos=Neos\Neos\ViewHelpers}
+<div class="neos-row-fluid">
+	<fieldset>
+		<legend>
+			{title}
+			<span class="cw-status cw-status--{section.status} cw-legend-status">
+				<f:switch expression="{section.status}">
+					<f:case value="ok"><f:translate id="status.ok" package="Calmfox.Watch">działa</f:translate></f:case>
+					<f:case value="warn"><f:translate id="status.warn" package="Calmfox.Watch">uwaga</f:translate></f:case>
+					<f:case value="fail"><f:translate id="status.fail" package="Calmfox.Watch">awaria</f:translate></f:case>
+					<f:defaultCase><f:translate id="status.unknown" package="Calmfox.Watch">brak danych</f:translate></f:defaultCase>
+				</f:switch>
+			</span>
+		</legend>
+		<f:if condition="{section.checks}">
+			<f:then>
+				<table class="neos-table">
+					<tbody>
+						<f:for each="{section.checks}" as="check">
+							<tr class="cw-row cw-row--{check.status}">
+								<td>
+									<span class="cw-status cw-status--{check.status}">
+										<f:switch expression="{check.status}">
+											<f:case value="ok"><f:translate id="status.ok" package="Calmfox.Watch">działa</f:translate></f:case>
+											<f:case value="warn"><f:translate id="status.warn" package="Calmfox.Watch">uwaga</f:translate></f:case>
+											<f:case value="fail"><f:translate id="status.fail" package="Calmfox.Watch">awaria</f:translate></f:case>
+											<f:defaultCase><f:translate id="status.unknown" package="Calmfox.Watch">brak danych</f:translate></f:defaultCase>
+										</f:switch>
+									</span>
+								</td>
+								<td>
+									<strong>{check.label}</strong>
+									<f:if condition="{check.detail}">
+										<br /><span class="neos-help-block">{check.detail}</span>
+									</f:if>
+									<f:if condition="{check.fix}">
+										<div class="cw-fix">
+											<span class="cw-fix__label"><f:translate id="checks.fix" package="Calmfox.Watch">Jak naprawić</f:translate></span>
+											<span class="cw-fix__text">{check.fix}</span>
+											<f:if condition="{check.command}">
+												<code class="cw-fix__command">{check.command}</code>
+												<span class="cw-fix__note"><f:translate id="checks.command.note" package="Calmfox.Watch">Przykład do wykonania na serwerze, w katalogu strony. Sprawdź go u siebie przed użyciem.</f:translate></span>
+											</f:if>
+										</div>
+									</f:if>
+								</td>
+								<td><f:if condition="{check.ms}">{check.ms} ms</f:if></td>
+							</tr>
+						</f:for>
+					</tbody>
+				</table>
+			</f:then>
+			<f:else>
+				<p><f:translate id="checks.empty" package="Calmfox.Watch">Brak sprawdzeń do pokazania.</f:translate></p>
+			</f:else>
+		</f:if>
+	</fieldset>
+</div>

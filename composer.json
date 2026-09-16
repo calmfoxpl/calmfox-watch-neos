@@ -1,0 +1,44 @@
+{
+    "name": "calmfox/watch-neos",
+    "type": "neos-package",
+    "description": "Monitoring wnętrza Neosa dla Calmfox Watch: sekretny adres kontrolny ze stanem usług (baza, dysk, poczta, pamięć podręczna, publikacja zasobów, repozytorium treści), podstawowa higiena bezpieczeństwa i historia zmian wersji pakietów.",
+    "keywords": ["neos", "flow", "monitoring", "health", "security"],
+    "homepage": "https://watch.calmfox.net",
+    "license": "GPL-3.0-or-later",
+    "authors": [
+        {
+            "name": "Calmfox",
+            "email": "kontakt@calmfox.pl",
+            "homepage": "https://calmfox.pl"
+        }
+    ],
+    "require": {
+        "php": ">=8.1",
+        "ext-json": "*",
+        "neos/flow": "^8.3 || ^9.0",
+        "neos/neos": "^8.3 || ^9.0"
+    },
+    "suggest": {
+        "flowpack/jobqueue-common": "Włącza sprawdzenie kolejek zadań (check queue). Bez tego pakietu check jest pomijany w całości.",
+        "flowpack/elasticsearch-contentrepositoryadaptor": "Włącza sprawdzenie klastra wyszukiwarki (check elasticsearch). Bez tego pakietu check jest pomijany w całości."
+    },
+    "autoload": {
+        "psr-4": {
+            "Calmfox\\Watch\\": "Classes/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Calmfox\\Watch\\Tests\\": "tests/"
+        }
+    },
+    "extra": {
+        "neos": {
+            "package-key": "Calmfox.Watch"
+        }
+    },
+    "support": {
+        "issues": "https://watch.calmfox.net",
+        "source": "https://watch.calmfox.net"
+    }
+}

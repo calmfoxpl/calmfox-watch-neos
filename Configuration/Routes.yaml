@@ -1,0 +1,26 @@
+#
+# Trasa sekretnego adresu kontrolnego.
+#
+# Ten plik sam z siebie nic nie włącza, podtrasę trzeba zarejestrować.
+# Robi to za Ciebie Settings.yaml pakietu (Neos.Flow.mvc.routes) i to
+# wystarcza w dystrybucjach bez Configuration/Routes.yaml w projekcie,
+# czyli m.in. w bazowej dystrybucji Neosa 9.
+#
+# Jeżeli projekt TRZYMA trasy w Configuration/Routes.yaml, dopisz podtrasę
+# tam, KONIECZNIE PRZED trasami Neos.Neos: łapią one wszystkie pozostałe
+# adresy jako podstrony, a Flow dokleja trasy z ustawień dopiero za nimi.
+# Gotowy fragment do wklejenia jest w README.md pakietu.
+#
+# Ścieżkę można zmienić: wystarczy podać własny uriPattern tutaj i tę samą
+# wartość w ustawieniu Calmfox.Watch.healthPath, żeby pakiet zgłosił hubowi
+# właściwy adres.
+#
+-
+  name: 'Calmfox Watch health'
+  uriPattern: 'calmfox-watch/health'
+  defaults:
+    '@package': 'Calmfox.Watch'
+    '@controller': 'Health'
+    '@action': 'index'
+    '@format': 'json'
+  httpMethods: ['GET']

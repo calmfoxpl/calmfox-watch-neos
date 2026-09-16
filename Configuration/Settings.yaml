@@ -1,0 +1,96 @@
+Calmfox:
+  Watch:
+    # Adres API Calmfox Watch. Zmienna środowiskowa CALMFOX_WATCH_API_URL ma
+    # pierwszeństwo, bo staging i produkcja dzielą zwykle ten sam plik ustawień.
+    apiUrl: 'https://watch.calmfox.net'
+
+    # Adres strony widziany z zewnątrz, np. 'https://twojadomena.pl'. Potrzebny
+    # w konsoli: tam nie ma żądania HTTP, z którego dałoby się odczytać host,
+    # a wiele instalacji Neosa nie ma wpisanych domen w bazie. Zostaw puste,
+    # a odczytamy po kolei: Neos.Flow.http.baseUri, bieżące żądanie, domeny
+    # strony z bazy. Bez żadnego z tych źródeł polecenia konsoli powiedzą
+    # wprost, że brakuje adresu, zamiast zgłosić hubowi adres bez hosta.
+    baseUri: ''
+
+    # Ścieżka adresu kontrolnego. Musi odpowiadać uriPattern z Routes.yaml:
+    # to z niej budujemy adres zgłaszany hubowi.
+    healthPath: '/calmfox-watch/health'
+
+    # Stan instalacji (sekret, parowanie, historia zmian wersji) w PLIKU, nie
+    # w bazie. Przy padniętej bazie adres kontrolny ma odpowiedzieć „db: fail"
+    # i kodem 503, a nie zamilknąć. Przy wielu instancjach aplikacji wskaż
+    # ścieżkę na wspólnym wolumenie: sekret musi być dla nich jeden.
+    statePath: '%FLOW_PATH_DATA%Persistent/CalmfoxWatch/state.json'
+
+    # Jawne nadpisanie konfiguracji poczty na potrzeby sprawdzenia połączenia.
+    # Zostaw puste, a odczytamy Neos.SwiftMailer albo adres DSN Symfony Mailera.
+    # encryption: 'tls', 'ssl' albo pusto.
+    smtp:
+      host: ''
+      port: 587
+      encryption: ''
+
+    # Ścieżka do Composera dla polecenia ./flow calmfoxwatch:updates. Pusto
+    # oznacza „poszukaj sam" (composer w PATH, potem typowe lokalizacje).
+    composerBinary: ''
+
+Neos:
+  Flow:
+    mvc:
+      routes:
+        # Samodzielna rejestracja trasy adresu kontrolnego. Dystrybucje Neosa 9
+        # (i każda inna bez Configuration/Routes.yaml w projekcie) budują trasy
+        # WYŁĄCZNIE z tego ustawienia, więc bez tego wpisu adres nie istnieje.
+        #
+        # „before Neos.Neos", bo trasy Neosa łapią każdy pozostały adres jako
+        # podstronę. Klucz jest bezpieczny: Neos deklaruje go we własnych
+        # ustawieniach i w 8.3, i w 9.1, a pakiet i tak wymaga neos/neos
+        # (odwołanie do nieistniejącego klucza kończy się wyjątkiem sortownika).
+        #
+        # W projekcie, który trzyma trasy w Configuration/Routes.yaml, ten wpis
+        # NIE wystarczy i nie szkodzi: Flow dokleja trasy z ustawień ZA trasami
+        # z pliku, więc trafiają za łapaczem Neosa i nigdy nie pasują. Tam trzeba
+        # dopisać podtrasę w pliku projektu, patrz README.
+        'Calmfox.Watch':
+          position: 'before Neos.Neos'
+
+  Neos:
+    modules:
+      # WŁASNA grupa modułów, a nie podmoduł „Zarządzania". Monitoring schowany
+      # o dwa poziomy ogląda wyłącznie ten, kto go szuka, a ma go zobaczyć ktoś,
+      # kto wszedł do panelu po treści i właśnie mija awarię. Grupa staje przed
+      # zarządzaniem, czyli na górze menu modułów.
+      #
+      # Grupa MA własny kontroler i jeden podmoduł wskazujący ten sam ekran:
+      # tak samo zbudowane są grupy Neosa („Zarządzanie", „Administracja"),
+      # więc pozycja jest klikalna i z paska, i z rozwinięcia.
+      calmfoxWatch:
+        label: 'Calmfox Watch'
+        controller: 'Calmfox\Watch\Controller\Module\WatchController'
+        description: 'Monitoring wnętrza strony: stan usług, higiena bezpieczeństwa i historia zmian wersji.'
+        icon: 'fas fa-heartbeat'
+        position: 'before management'
+        # Nazwa arkusza panelu, którą ramka modułu skleja w ścieżkę
+        # resource://Neos.Neos/Styles/<nazwa>.css. Wielkość liter MA
+        # ZNACZENIE: plik nazywa się Lite.css, a „lite" dawało 404 i ekran
+        # modułu renderował się bez ŻADNEGO stylu (zgłoszone z produkcji).
+        # Dozwolone: Main, Lite, Minimal. Neos daje Lite swoim podmodułom.
+        mainStylesheet: 'Lite'
+        # Własny arkusz dokładany do ramki modułu. Panel Neosa jest szary,
+        # a ekran monitoringu bez koloru zmusza do czytania wszystkiego,
+        # żeby znaleźć to jedno sprawdzenie, które się nie udało.
+        additionalResources:
+          styleSheets:
+            'Calmfox.Watch': 'resource://Calmfox.Watch/Public/Styles/Module.css'
+        privilegeTarget: 'Calmfox.Watch:Module.Manage'
+        submodules:
+          overview:
+            label: 'Kondycja strony'
+            controller: 'Calmfox\Watch\Controller\Module\WatchController'
+            description: 'Stan usług, higiena bezpieczeństwa i historia zmian wersji.'
+            icon: 'fas fa-heartbeat'
+            mainStylesheet: 'Lite'
+            additionalResources:
+              styleSheets:
+                'Calmfox.Watch': 'resource://Calmfox.Watch/Public/Styles/Module.css'
+            privilegeTarget: 'Calmfox.Watch:Module.Manage'

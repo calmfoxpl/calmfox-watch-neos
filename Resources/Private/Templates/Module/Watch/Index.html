@@ -1,0 +1,283 @@
+{namespace neos=Neos\Neos\ViewHelpers}
+<f:layout name="BackendSubModule" />
+
+<f:section name="content">
+
+	<div class="neos-row-fluid">
+		<legend>
+			<f:translate id="module.title" package="Calmfox.Watch">Calmfox Watch</f:translate>
+			<small>{version}</small>
+		</legend>
+	</div>
+
+	<f:if condition="{justConnected}">
+		<div class="cw-welcome">
+			<h2><f:translate id="welcome.title" package="Calmfox.Watch">Dziękujemy, strona jest połączona</f:translate></h2>
+			<p><f:translate id="welcome.lead" package="Calmfox.Watch">Od tej chwili patrzymy do środka: usługi, konta z pełnymi uprawnieniami i zmiany wersji pakietów. Pierwsze odpytanie monitoringu przyjdzie w ciągu kilku minut, a wyniki zobaczysz niżej i w panelu Calmfox Watch.</f:translate></p>
+		</div>
+	</f:if>
+
+	<div class="cw-tiles">
+		<div class="cw-tile cw-tile--{connectionState}">
+			<span class="cw-tile__label"><f:translate id="tile.connection" package="Calmfox.Watch">Połączenie z monitoringiem</f:translate></span>
+			<span class="cw-tile__value">
+				<f:if condition="{connected}">
+					<f:then><f:translate id="tile.connection.on" package="Calmfox.Watch">aktywne</f:translate></f:then>
+					<f:else><f:translate id="tile.connection.off" package="Calmfox.Watch">brak</f:translate></f:else>
+				</f:if>
+			</span>
+			<f:if condition="{connected}">
+				<span class="cw-tile__note"><f:translate id="tile.connection.note" package="Calmfox.Watch" arguments="{0: domain, 1: plan}">{0}, pakiet {1}.</f:translate></span>
+			</f:if>
+		</div>
+
+		<div class="cw-tile cw-tile--{contextState}">
+			<span class="cw-tile__label"><f:translate id="tile.context" package="Calmfox.Watch">Tryb pracy aplikacji</f:translate></span>
+			<span class="cw-tile__value">{context}</span>
+			<span class="cw-tile__note">
+				<f:if condition="{production}">
+					<f:then><f:translate id="tile.context.prod" package="Calmfox.Watch">Tryb produkcyjny: pamięć podręczna działa, a odwiedzający nie widzą szczegółów błędów.</f:translate></f:then>
+					<f:else><f:translate id="tile.context.dev" package="Calmfox.Watch">To NIE jest tryb produkcyjny. Strona działa wolniej i pokazuje odwiedzającym ślad wykonania ze ścieżkami plików. Na serwerze produkcyjnym ustaw FLOW_CONTEXT na Production.</f:translate></f:else>
+				</f:if>
+			</span>
+		</div>
+
+		<div class="cw-tile cw-tile--{updatesState}">
+			<span class="cw-tile__label"><f:translate id="tile.updates" package="Calmfox.Watch">Zaległe aktualizacje pakietów</f:translate></span>
+			<span class="cw-tile__value">
+				<f:if condition="{updates}">
+					<f:then>{updates.core} + {updates.plugins}</f:then>
+					<f:else><f:translate id="tile.updates.never" package="Calmfox.Watch">nie sprawdzono</f:translate></f:else>
+				</f:if>
+			</span>
+			<span class="cw-tile__note">
+				<f:if condition="{updates}">
+					<f:then>
+						<f:translate id="tile.updates.at" package="Calmfox.Watch">Odczyt z:</f:translate> {updates.at}.
+						<f:if condition="{updatesStale}">
+							<f:translate id="tile.updates.stale" package="Calmfox.Watch">Ten odczyt jest starszy niż tydzień, więc nie mów o nim „aktualny”. Dopisz polecenie do zadań cyklicznych.</f:translate>
+						</f:if>
+					</f:then>
+					<f:else><f:translate id="tile.updates.hint" package="Calmfox.Watch">Nie zgadujemy: dopóki nikt nie policzy, nie twierdzimy, że jest aktualnie. Polecenie do crona: ./flow calmfoxwatch:updates</f:translate></f:else>
+				</f:if>
+			</span>
+			<f:form action="checkUpdates" style="display:inline-block;margin-top:8px">
+				<button type="submit" class="neos-button"><f:translate id="action.checkUpdates" package="Calmfox.Watch">Sprawdź teraz</f:translate></button>
+			</f:form>
+		</div>
+	</div>
+
+	<f:if condition="{secure} == 0">
+		<div class="neos-alert neos-alert-error">
+			<f:translate id="warning.http" package="Calmfox.Watch">Strona działa po protokole HTTP, a Calmfox Watch łączy się wyłącznie z adresami HTTPS. Włącz certyfikat SSL, aby nawiązać połączenie.</f:translate>
+		</div>
+	</f:if>
+
+	<f:if condition="{loopback.ok} == 0">
+		<div class="neos-alert neos-alert-warning">
+			<f:translate id="warning.loopback" package="Calmfox.Watch" arguments="{0: loopback.message}">Sprawdzenie wykonane z serwera nie dociera do adresu kontrolnego pakietu ({0}). Jeżeli połączenie się nie powiedzie, sprawdź, czy trasa pakietu jest wpięta w Configuration/Routes.yaml projektu i czy zapora sieciowa nie blokuje tej ścieżki.</f:translate>
+		</div>
+	</f:if>
+
+	<f:if condition="{connected}">
+		<f:then>
+
+			<div class="neos-row-fluid">
+				<fieldset>
+					<legend><f:translate id="status.title" package="Calmfox.Watch">Połączono z Calmfox Watch</f:translate></legend>
+					<p>
+						<f:translate id="status.site" package="Calmfox.Watch" arguments="{0: domain, 1: plan}">Strona {0}, pakiet {1}.</f:translate>
+						<f:if condition="{lastPollAt} > 0">
+							<f:then>
+								<f:translate id="status.lastPoll" package="Calmfox.Watch">Ostatnie odpytanie monitoringu:</f:translate>
+								<f:format.date format="Y-m-d H:i">@{lastPollAt}</f:format.date> UTC.
+							</f:then>
+							<f:else><f:translate id="status.noPoll" package="Calmfox.Watch">Monitoring jeszcze nie odpytał adresu kontrolnego, pierwsze sprawdzenie w ciągu kilku minut.</f:translate></f:else>
+						</f:if>
+					</p>
+					<p>
+						<f:if condition="{panelUrl}">
+							<a class="neos-button neos-button-primary" target="_blank" rel="noopener" href="{panelUrl}/app/dashboard?site={siteId}">
+								<f:translate id="action.openPanel" package="Calmfox.Watch">Otwórz tę stronę w panelu</f:translate>
+							</a>
+						</f:if>
+						<f:form action="rotate" style="display:inline-block">
+							<button type="submit" class="neos-button"><f:translate id="action.rotate" package="Calmfox.Watch">Wymień klucz</f:translate></button>
+						</f:form>
+						<f:form action="refresh" style="display:inline-block">
+							<button type="submit" class="neos-button"><f:translate id="action.refresh" package="Calmfox.Watch">Przelicz sprawdzenia</f:translate></button>
+						</f:form>
+						<f:form action="disconnect" style="display:inline-block">
+							<button type="submit" class="neos-button neos-button-danger"><f:translate id="action.disconnect" package="Calmfox.Watch">Rozłącz</f:translate></button>
+						</f:form>
+					</p>
+				</fieldset>
+			</div>
+
+			<!--
+				Pakiet strony. Zakup dzieje się w panelu (subskrypcja per strona), moduł tylko
+				prowadzi do właściwego miejsca w kontekście TEJ strony. Pakiet znamy z chwili
+				połączenia i tak to mówimy: źródłem prawdy jest panel.
+			-->
+			<div class="neos-row-fluid">
+				<fieldset>
+					<f:if condition="{isFreePlan}">
+						<f:then>
+							<legend><f:translate id="plan.freeTitle" package="Calmfox.Watch">Pakiet Free, co dokłada wyższy próg</f:translate></legend>
+							<p><f:translate id="plan.freeIntro" package="Calmfox.Watch">Na Free pilnujemy dostępności strony, certyfikatu i stanu usług. Wyższe pakiety dokładają to, czego Free nie obejmuje:</f:translate></p>
+							<ul class="cw-plan-list">
+								<li><f:translate id="plan.item1" package="Calmfox.Watch">sondy co 30 do 60 sekund zamiast co 5 minut, awarię widać od razu, nie po kwadransie</f:translate></li>
+								<li><f:translate id="plan.item2" package="Calmfox.Watch">przegląd podstron: urwane treści, błędy 404 i zepsute odnośniki, zanim zauważy je odwiedzający</f:translate></li>
+								<li><f:translate id="plan.item3" package="Calmfox.Watch">monitoring wybranych podstron i formularzy, nie tylko strony głównej</f:translate></li>
+								<li><f:translate id="plan.item4" package="Calmfox.Watch">powiadomienia SMS-em, w komunikatorze i w aplikacji, bez miesięcznego limitu</f:translate></li>
+								<li><f:translate id="plan.item5" package="Calmfox.Watch">raporty okresowe i dłuższa historia zdarzeń</f:translate></li>
+							</ul>
+							<p>
+								<a class="neos-button neos-button-primary" target="_blank" rel="noopener" href="{planUrl}">
+									<f:translate id="plan.freeCta" package="Calmfox.Watch">Zobacz pakiety dla tej strony</f:translate>
+								</a>
+							</p>
+							<p class="neos-help-block"><f:translate id="plan.freeNote" package="Calmfox.Watch">Pakiet kupujesz w panelu, kartą, osobno dla każdej strony.</f:translate></p>
+						</f:then>
+						<f:else>
+							<legend><f:translate id="plan.paidTitle" package="Calmfox.Watch">Pakiet i płatności</f:translate></legend>
+							<p><f:translate id="plan.paidText" package="Calmfox.Watch" arguments="{0: plan}">Ta strona jest w pakiecie {0} (stan z chwili połączenia, bieżący pakiet i płatności zobaczysz w panelu).</f:translate></p>
+							<p>
+								<a class="neos-button" target="_blank" rel="noopener" href="{planUrl}">
+									<f:translate id="plan.paidCta" package="Calmfox.Watch">Zarządzaj pakietem i płatnościami</f:translate>
+								</a>
+							</p>
+						</f:else>
+					</f:if>
+				</fieldset>
+			</div>
+
+			<f:render partial="Module/Checks" arguments="{title: 'Stan usług', section: health}" />
+
+			<div class="neos-row-fluid">
+				<fieldset>
+					<legend><f:translate id="quota.title" package="Calmfox.Watch">Limit dysku na koncie hostingowym</f:translate></legend>
+					<f:form action="quota">
+						<div class="neos-control-group">
+							<label for="cw-quota"><f:translate id="quota.label" package="Calmfox.Watch">Limit w gigabajtach</f:translate></label>
+							<input type="text" inputmode="decimal" id="cw-quota" name="quota" value="{f:if(condition: diskQuotaGb, then: diskQuotaGb, else: '')}" placeholder="20" />
+							<button type="submit" class="neos-button"><f:translate id="quota.save" package="Calmfox.Watch">Zapisz limit</f:translate></button>
+						</div>
+						<p class="neos-help-block">
+							<f:translate id="quota.help" package="Calmfox.Watch">Znajdziesz go w panelu hostingu albo w umowie. Zostaw puste, jeśli nie wiesz. Wtedy pokazujemy tylko rozmiar instalacji, bez zgadywania.</f:translate>
+						</p>
+					</f:form>
+				</fieldset>
+			</div>
+
+			<f:render partial="Module/Checks" arguments="{title: 'Bezpieczeństwo', section: security}" />
+
+			<f:if condition="{updates}">
+				<f:else>
+					<div class="neos-alert neos-alert-warning">
+						<f:translate id="updates.missing" package="Calmfox.Watch">Nie sprawdzamy zaległych aktualizacji: nikt jeszcze nie uruchomił polecenia ./flow calmfoxwatch:updates. Dodaj je do zadań cyklicznych raz na dobę, a zaczniemy pilnować.</f:translate>
+					</div>
+				</f:else>
+			</f:if>
+
+			<div class="neos-row-fluid">
+				<fieldset>
+					<legend><f:translate id="history.title" package="Calmfox.Watch">Historia zmian wersji</f:translate></legend>
+					<p class="neos-help-block">
+						<f:translate id="history.note" package="Calmfox.Watch">Zbierana od instalacji pakietu. Data oznacza czas wykrycia zmiany, nie czas wdrożenia: pakiety wymienia Composer poza aplikacją, więc porównujemy wersje przy okazji sprawdzeń bezpieczeństwa.</f:translate>
+					</p>
+					<f:if condition="{history}">
+						<f:then>
+							<table class="neos-table">
+								<tbody>
+									<f:for each="{history}" as="entry">
+										<tr>
+											<td>{entry.at}</td>
+											<td><strong>{entry.name}</strong></td>
+											<td>
+												<f:if condition="{entry.from}">{entry.from} &rarr; </f:if>
+												<f:if condition="{entry.to}">
+													<f:then>{entry.to}</f:then>
+													<f:else><f:translate id="history.removed" package="Calmfox.Watch">pakiet usunięty</f:translate></f:else>
+												</f:if>
+											</td>
+										</tr>
+									</f:for>
+								</tbody>
+							</table>
+						</f:then>
+						<f:else>
+							<p><f:translate id="history.empty" package="Calmfox.Watch">Brak wpisów. Pierwszy pojawi się przy najbliższej zmianie wersji pakietu.</f:translate></p>
+						</f:else>
+					</f:if>
+				</fieldset>
+			</div>
+
+		</f:then>
+		<f:else>
+
+			<div class="neos-row-fluid">
+				<p>
+					<f:translate id="intro" package="Calmfox.Watch">Monitoring wnętrza strony: dostępność usług (baza danych, poczta, dysk, pamięć podręczna, publikacja zasobów, repozytorium treści), podstawowa higiena bezpieczeństwa i historia zmian wersji pakietów. Wyniki znajdziesz w panelu Calmfox Watch.</f:translate>
+				</p>
+			</div>
+
+			<f:if condition="{connectUrl}">
+				<div class="neos-row-fluid">
+					<fieldset>
+						<legend><f:translate id="setup.connect.title" package="Calmfox.Watch">Połącz przez Calmfox Watch</f:translate></legend>
+						<p><f:translate id="setup.connect.lead" package="Calmfox.Watch">Najprostsza droga: przechodzisz do panelu, logujesz się albo zakładasz konto, wybierasz organizację, a my wracamy tutaj i łączymy stronę bez przepisywania kluczy.</f:translate></p>
+						<f:form action="connect">
+							<button type="submit" class="neos-button neos-button-primary"><f:translate id="setup.connect.submit" package="Calmfox.Watch">Połącz przez Calmfox Watch</f:translate></button>
+						</f:form>
+					</fieldset>
+				</div>
+			</f:if>
+
+			<div class="neos-row-fluid">
+				<fieldset>
+					<legend><f:translate id="setup.free.title" package="Calmfox.Watch">Nie mam konta, załóż pakiet Free</f:translate></legend>
+					<p><f:translate id="setup.free.lead" package="Calmfox.Watch">Konto zakładamy od razu: monitoring dostępności strony, certyfikatu SSL i stanu Neosa. Bez hasła, logowanie linkiem wysyłanym na adres e-mail.</f:translate></p>
+					<f:form action="register">
+						<div class="neos-control-group">
+							<label for="cw-email"><f:translate id="setup.free.email" package="Calmfox.Watch">Adres e-mail właściciela</f:translate></label>
+							<input type="email" id="cw-email" name="email" required="required" />
+						</div>
+						<div class="neos-control-group">
+							<label>
+								<input type="checkbox" name="consent" value="1" />
+								<f:translate id="setup.free.consent" package="Calmfox.Watch">Zgadzam się na przekazanie adresu e-mail i domeny strony do Calmfox w celu założenia konta monitoringu.</f:translate>
+							</label>
+						</div>
+						<button type="submit" class="neos-button neos-button-primary"><f:translate id="setup.free.submit" package="Calmfox.Watch">Aktywuj pakiet Free</f:translate></button>
+					</f:form>
+				</fieldset>
+			</div>
+
+			<div class="neos-row-fluid">
+				<fieldset>
+					<legend><f:translate id="setup.pair.title" package="Calmfox.Watch">Mam już konto, połącz kluczem</f:translate></legend>
+					<p><f:translate id="setup.pair.lead" package="Calmfox.Watch">Klucz instalacyjny skopiujesz z ekranu Integracje w panelu Calmfox Watch.</f:translate></p>
+					<f:form action="pair">
+						<div class="neos-control-group">
+							<label for="cw-token"><f:translate id="setup.pair.token" package="Calmfox.Watch">Klucz instalacyjny</f:translate></label>
+							<input type="text" id="cw-token" name="token" placeholder="fxp_live_" required="required" />
+						</div>
+						<button type="submit" class="neos-button neos-button-primary"><f:translate id="setup.pair.submit" package="Calmfox.Watch">Połącz</f:translate></button>
+					</f:form>
+					<p class="neos-help-block">
+						<f:translate id="setup.cli" package="Calmfox.Watch">Wdrożenia bez klikania: ./flow calmfoxwatch:register adres@example.com albo ./flow calmfoxwatch:pair fxp_live_...</f:translate>
+					</p>
+				</fieldset>
+			</div>
+
+		</f:else>
+	</f:if>
+
+	<div class="neos-row-fluid">
+		<p class="neos-help-block">
+			<f:translate id="footer.apiUrl" package="Calmfox.Watch" arguments="{0: apiUrl}">Adres API: {0}</f:translate>
+		</p>
+	</div>
+
+</f:section>

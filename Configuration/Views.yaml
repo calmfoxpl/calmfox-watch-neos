@@ -1,0 +1,24 @@
+#
+# Ścieżki widoku dla modułu w panelu.
+#
+# Bez tego pliku Fluid szuka layoutu WYŁĄCZNIE w naszym pakiecie, a layout
+# panelu (BackendSubModule) mieszka w Neos.Neos. Skutkiem był wyjątek
+# „The layout files ... could not be loaded" i HTTP 500 na ekranie modułu,
+# przy w pełni działającej reszcie strony (zgłoszone z produkcji 2026-08-19).
+#
+# Kolejność ma znaczenie: najpierw nasze katalogi, żeby własny szablon i partial
+# wygrywały, potem katalogi Neosa jako źródło layoutu i wspólnych fragmentów.
+# Nazwa „BackendSubModule" jest ta sama w Neosie 8.3 i 9.1 (sprawdzone w obu
+# drzewach); layoutu o nazwie „Module" nie ma w żadnej z tych wersji.
+#
+-
+  requestFilter: 'isPackage("Calmfox.Watch") && isController("Module\Watch")'
+  options:
+    templateRootPaths:
+      - 'resource://Calmfox.Watch/Private/Templates'
+    layoutRootPaths:
+      - 'resource://Calmfox.Watch/Private/Layouts'
+      - 'resource://Neos.Neos/Private/Layouts'
+    partialRootPaths:
+      - 'resource://Calmfox.Watch/Private/Partials'
+      - 'resource://Neos.Neos/Private/Partials'

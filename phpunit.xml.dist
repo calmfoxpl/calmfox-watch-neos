@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  Testy rdzenia pakietu. Rdzeń (Classes/Core) jest świadomie bez żadnej
+  zależności od Flow, więc uruchamiają się bez bootstrapu frameworka, bez bazy
+  i bez sieci: własny autoloader PSR-4 z tests/bootstrap.php wystarczy.
+-->
+<phpunit xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         bootstrap="tests/bootstrap.php"
+         colors="true"
+         cacheDirectory=".phpunit.cache"
+         failOnWarning="true"
+         failOnRisky="true"
+         beStrictAboutOutputDuringTests="true">
+    <testsuites>
+        <testsuite name="Calmfox.Watch">
+            <directory>tests/Unit</directory>
+        </testsuite>
+    </testsuites>
+    <source>
+        <include>
+            <directory suffix=".php">Classes/Core</directory>
+        </include>
+    </source>
+</phpunit>

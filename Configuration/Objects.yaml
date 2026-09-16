@@ -1,0 +1,14 @@
+#
+# Wstrzyknięcie konkretnego magazynu pamięci podręcznej. Flow nie potrafi
+# zrobić tego adnotacją, bo VariableFrontend jest jeden na wiele magazynów,
+# a my chcemy dokładnie ten nazwany w Caches.yaml.
+#
+Calmfox\Watch\Service\Cache:
+  properties:
+    cache:
+      object:
+        factoryObjectName: Neos\Flow\Cache\CacheManager
+        factoryMethodName: getCache
+        arguments:
+          1:
+            value: 'Calmfox_Watch_Payload'

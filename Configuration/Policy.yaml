@@ -1,0 +1,40 @@
+#
+# Moduł w panelu widzi wyłącznie administrator: znajdują się w nim sekret
+# adresu kontrolnego i przycisk rozłączenia monitoringu, a wyciszenie
+# strażnika bywa pierwszym krokiem po przejęciu panelu.
+#
+# Adres kontrolny musi mieć WŁASNY przywilej nadany wszystkim. To nie jest
+# nadmiarowa deklaracja: Neos ma regułę „Neos.Neos:AllControllerActions",
+# która obejmuje KAŻDĄ publiczną akcję kontrolera, a rola Neos.Flow:Everybody
+# dostaje tylko wskazane wyjątki (tak otwarty jest frontend). Bez wpisu niżej
+# hub dostaje HTTP 401 zamiast danych, a strona błędu udaje odpowiedź pakietu.
+# Sprawdzone na żywej instalacji Neos 9.1.5, gdzie brak tego wpisu dawał 401.
+#
+# Bramką adresu jest sekret w zapytaniu i porównanie hash_equals w kontrolerze,
+# nie konto użytkownika: hub odpytuje nas bez sesji i bez logowania.
+#
+privilegeTargets:
+
+  'Neos\Flow\Security\Authorization\Privilege\Method\MethodPrivilege':
+
+    'Calmfox.Watch:Module.Manage':
+      label: 'Moduł Calmfox Watch w panelu'
+      matcher: 'method(Calmfox\Watch\Controller\Module\WatchController->.*Action())'
+
+    'Calmfox.Watch:HealthEndpoint':
+      label: 'Sekretny adres kontrolny (bramką jest klucz w adresie)'
+      matcher: 'method(Calmfox\Watch\Controller\HealthController->indexAction())'
+
+roles:
+
+  'Neos.Flow:Everybody':
+    privileges:
+      -
+        privilegeTarget: 'Calmfox.Watch:HealthEndpoint'
+        permission: GRANT
+
+  'Neos.Neos:Administrator':
+    privileges:
+      -
+        privilegeTarget: 'Calmfox.Watch:Module.Manage'
+        permission: GRANT

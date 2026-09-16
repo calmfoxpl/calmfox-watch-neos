@@ -1,0 +1,126 @@
+/*
+ * Kolory ekranu Calmfox Watch.
+ *
+ * Panel Neosa jest z założenia szary, a nasz ekran to lista kilkunastu sprawdzeń,
+ * z których każde może być w trzech stanach. Bez koloru trzeba je CZYTAĆ jedno po
+ * drugim, żeby znaleźć to jedno czerwone, a o to właśnie chodzi przy monitoringu.
+ *
+ * Paleta jest ta sama, której używa panel Neosa (zielony #00a338, pomarańczowy
+ * #ff8700, czerwony #ff460d), żeby ekran nie wyglądał jak wklejka z innej aplikacji.
+ * Kolor NIGDY nie jest jedynym nośnikiem znaczenia: przy każdym stanie stoi słowo,
+ * bo jeden na dwunastu mężczyzn nie odróżnia czerwieni od zieleni.
+ */
+
+.cw-status {
+	display: inline-block;
+	min-width: 5.5em;
+	padding: 2px 8px;
+	border-radius: 2px;
+	font-size: 12px;
+	font-weight: 700;
+	text-align: center;
+	text-transform: uppercase;
+	letter-spacing: .04em;
+	color: #fff;
+}
+
+.cw-status--ok { background: #00a338; }
+.cw-status--warn { background: #ff8700; color: #201400; }
+.cw-status--fail { background: #ff460d; }
+.cw-status--unknown { background: #4b4b4b; color: #cfcfcf; }
+
+/* Wiersz z problemem ma jeszcze pasek z boku: kolor widać wtedy także kątem oka,
+   przy przewijaniu długiej listy, bez czytania etykiet. */
+.cw-row { border-left: 3px solid transparent; }
+.cw-row--warn { border-left-color: #ff8700; background: rgba(255, 135, 0, .06); }
+.cw-row--fail { border-left-color: #ff460d; background: rgba(255, 70, 13, .08); }
+
+.cw-row td { vertical-align: top; }
+
+/* Nagłówek sekcji: podsumowanie stanu obok tytułu, żeby nie trzeba było
+   rozwijać tabeli, gdy wszystko jest w porządku. */
+.cw-legend-status { margin-left: .5em; vertical-align: middle; }
+
+/* Kafle stanu na górze ekranu (połączenie, tryb pracy, aktualizacje). */
+.cw-tiles { display: flex; flex-wrap: wrap; gap: 12px; margin: 0 0 16px; }
+
+.cw-tile {
+	flex: 1 1 220px;
+	padding: 12px 14px;
+	border-radius: 3px;
+	border-left: 4px solid #4b4b4b;
+	background: #323232;
+}
+
+.cw-tile--ok { border-left-color: #00a338; }
+.cw-tile--warn { border-left-color: #ff8700; }
+.cw-tile--fail { border-left-color: #ff460d; }
+
+.cw-tile__label {
+	display: block;
+	font-size: 11px;
+	text-transform: uppercase;
+	letter-spacing: .06em;
+	color: #999;
+	margin-bottom: 4px;
+}
+
+.cw-tile__value { font-size: 15px; font-weight: 700; color: #fff; }
+.cw-tile__note { display: block; margin-top: 4px; font-size: 12px; line-height: 1.45; color: #b0b0b0; }
+
+/* Powitanie po powrocie z panelu. Pokazujemy je raz, po udanym połączeniu. */
+.cw-welcome {
+	margin: 0 0 16px;
+	padding: 16px 18px;
+	border-radius: 3px;
+	border-left: 4px solid #00a338;
+	background: linear-gradient(90deg, rgba(0, 163, 56, .18), rgba(0, 163, 56, .04));
+}
+
+.cw-welcome h2 { margin: 0 0 6px; font-size: 17px; color: #fff; }
+.cw-welcome p { margin: 0; color: #d5d5d5; line-height: 1.5; }
+
+/* Konkret naprawczy pod opisem sprawdzenia: co ustawić i przykładowe polecenie.
+   Polecenie zostaje zaznaczalne (własny blok, łamanie długich ścieżek), bo to
+   ono ma trafić do terminala albo do wiadomości do hostingodawcy. */
+.cw-fix {
+	margin-top: 8px;
+	padding: 8px 10px;
+	border-left: 3px solid #4b4b4b;
+	background: rgba(255, 255, 255, .04);
+	border-radius: 2px;
+}
+
+.cw-fix__label {
+	display: block;
+	font-size: 11px;
+	font-weight: 700;
+	text-transform: uppercase;
+	letter-spacing: .06em;
+	color: #999;
+	margin-bottom: 3px;
+}
+
+.cw-fix__text { display: block; font-size: 12px; line-height: 1.5; color: #d5d5d5; }
+
+.cw-fix__command {
+	display: block;
+	margin-top: 6px;
+	padding: 6px 8px;
+	background: #111;
+	border-radius: 2px;
+	font-family: Menlo, Consolas, monospace;
+	font-size: 12px;
+	line-height: 1.45;
+	color: #e8e8e8;
+	white-space: pre-wrap;
+	word-break: break-all;
+	user-select: all;
+}
+
+.cw-fix__note { display: block; margin-top: 4px; font-size: 11px; line-height: 1.45; color: #999; }
+
+/* Lista tego, co dokłada wyższy pakiet. Krótka i wypunktowana, bo czyta ją ktoś,
+   kto właśnie zobaczył, że na Free czegoś nie ma. */
+.cw-plan-list { margin: .5rem 0 .75rem 1.25rem; list-style: disc; }
+.cw-plan-list li { margin-bottom: .25rem; }

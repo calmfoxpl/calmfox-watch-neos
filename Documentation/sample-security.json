@@ -1,0 +1,135 @@
+{
+    "schema": 1,
+    "plugin": "1.3.1",
+    "status": "warn",
+    "checks": [
+        {
+            "id": "admin_count",
+            "status": "ok",
+            "label": "Liczba administratorów",
+            "detail": "Kont z pełnymi uprawnieniami: 3.",
+            "fix": null,
+            "command": null,
+            "ms": null
+        },
+        {
+            "id": "admin_login",
+            "status": "warn",
+            "label": "Konto o loginie „admin”",
+            "detail": "Istnieje konto administratora o loginie „admin”, pierwszy cel ataków słownikowych na hasła.",
+            "fix": "Załóż konto administratora z własnym loginem, sprawdź logowanie na nie i dopiero wtedy skasuj konto „admin”.",
+            "command": null,
+            "ms": null
+        },
+        {
+            "id": "flow_context",
+            "status": "ok",
+            "label": "Tryb pracy aplikacji",
+            "detail": "Tryb Production.",
+            "fix": null,
+            "command": null,
+            "ms": null
+        },
+        {
+            "id": "debug_display",
+            "status": "ok",
+            "label": "Wyświetlanie szczegółów błędów",
+            "detail": "Odwiedzający widzi stronę błędu, a nie ślad wykonania i ścieżki plików.",
+            "fix": null,
+            "command": null,
+            "ms": null
+        },
+        {
+            "id": "https",
+            "status": "ok",
+            "label": "Szyfrowanie HTTPS",
+            "detail": null,
+            "fix": null,
+            "command": null,
+            "ms": null
+        },
+        {
+            "id": "php_version",
+            "status": "ok",
+            "label": "Wersja PHP",
+            "detail": "PHP 8.3.14, wersja wspierana.",
+            "fix": null,
+            "command": null,
+            "ms": null
+        },
+        {
+            "id": "config_perms",
+            "status": "warn",
+            "label": "Uprawnienia plików konfiguracji",
+            "detail": "Zbyt szerokie prawa: Configuration/Production/Settings.yaml (660). Plik z hasłem do bazy jest dostępny dla innych użytkowników serwera. Ustaw 640 albo 600.",
+            "fix": "Docelowe prawa to 640: właściciel czyta i zapisuje, grupa serwera WWW tylko czyta, reszta serwera nic.",
+            "command": "chmod 640 Configuration/Production/Settings.yaml",
+            "ms": null
+        },
+        {
+            "id": "dir_perms",
+            "status": "ok",
+            "label": "Uprawnienia katalogów",
+            "detail": "Katalogi zapisywalne przez aplikację nie są otwarte dla całego serwera.",
+            "fix": null,
+            "command": null,
+            "ms": null
+        },
+        {
+            "id": "encryption_key",
+            "status": "ok",
+            "label": "Klucz szyfrujący aplikacji",
+            "detail": "Klucz istnieje, prawa 600.",
+            "fix": null,
+            "command": null,
+            "ms": null
+        },
+        {
+            "id": "dev_packages",
+            "status": "warn",
+            "label": "Pakiety deweloperskie",
+            "detail": "Wdrożenie zawiera 12 pakietów z wymagań deweloperskich. Na produkcji są zbędne i powiększają powierzchnię ataku.",
+            "fix": "Na produkcji instaluj bez wymagań deweloperskich i po każdym wdrożeniu przeładuj autoloader.",
+            "command": "composer install --no-dev --optimize-autoloader",
+            "ms": null
+        },
+        {
+            "id": "pending_updates",
+            "status": "ok",
+            "label": "Zaległe aktualizacje",
+            "detail": "Pakietów do aktualizacji: 3.",
+            "fix": null,
+            "command": null,
+            "ms": null
+        }
+    ],
+    "history": [
+        {
+            "kind": "plugin",
+            "name": "flowpack/jobqueue-common",
+            "from": "2.1.0",
+            "to": "2.2.0",
+            "at": "2026-08-18T21:35:00+00:00",
+            "mode": "manual",
+            "by": null
+        },
+        {
+            "kind": "core",
+            "name": "neos/neos",
+            "from": "8.3.13",
+            "to": "8.3.14",
+            "at": "2026-08-18T21:35:00+00:00",
+            "mode": "manual",
+            "by": null
+        },
+        {
+            "kind": "core",
+            "name": "PHP",
+            "from": "8.2.20",
+            "to": "8.3.14",
+            "at": "2026-07-02T05:12:00+00:00",
+            "mode": "manual",
+            "by": null
+        }
+    ]
+}

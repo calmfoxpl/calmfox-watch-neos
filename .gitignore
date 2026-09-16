@@ -1,0 +1,7 @@
+# Pamięć podręczna PHPUnit (katalog z phpunit.xml.dist)
+/.phpunit.cache/
+/.phpunit.result.cache
+
+# Zależności, gdyby ktoś uruchamiał composer install wprost w pakiecie
+/vendor/
+/composer.lock
