@@ -124,3 +124,51 @@
    kto właśnie zobaczył, że na Free czegoś nie ma. */
 .cw-plan-list { margin: .5rem 0 .75rem 1.25rem; list-style: disc; }
 .cw-plan-list li { margin-bottom: .25rem; }
+
+/*
+ * Kondycja strony: pierścień, trzy liczby i legenda obszarów.
+ *
+ * Ten sam układ, co na kafelkach pozostałych pakietów (WordPress, Magento, Sylius):
+ * rysunek po lewej, liczby po prawej, a przy zwężeniu okna rysunek schodzi nad treść
+ * zamiast ją ściskać. Klient z dwiema stronami na różnych systemach ma zobaczyć jedno
+ * i to samo, a nie dwie opowieści o tym samym monitoringu.
+ */
+.cw-score { display: flex; flex-wrap: wrap; gap: 12px 28px; align-items: flex-start; }
+.cw-ring { flex: 0 0 auto; width: 190px; max-width: 45vw; }
+.cw-ring svg { display: block; width: 100%; height: auto; }
+.cw-score__rest { flex: 1 1 280px; min-width: 0; }
+
+/* Obszar NIEZMIERZONY zostaje kreskowanym torem: od razu widać, że tam nie mierzymy,
+   a barwna kropka sugerowałaby pomiar, który wyszedł zero. */
+.cw-arc--unmeasured { stroke-dasharray: 2 7; }
+
+/* Liczby wewnątrz rysunku są w jednostkach pola (220), nie w pikselach ekranu:
+   SVG skaluje się do szerokości kolumny, więc piksele dawałyby inny rozmiar
+   przy każdej szerokości panelu. */
+.cw-ring__value { font-size: 56px; font-weight: 700; fill: #e8e8e8; }
+.cw-ring__value--ok { fill: #00a338; }
+.cw-ring__value--warn { fill: #ff8700; }
+.cw-ring__value--bad { fill: #ff460d; }
+.cw-ring__value--muted { fill: #cfcfcf; }
+.cw-ring__scale { font-size: 19px; fill: #999; }
+
+.cw-counts { display: flex; flex-wrap: wrap; gap: 4px 28px; margin: 0 0 14px; }
+.cw-count b { display: block; font-size: 26px; font-weight: 700; line-height: 1.1; font-variant-numeric: tabular-nums; }
+.cw-count span { display: block; font-size: 12px; font-weight: 700; letter-spacing: .04em; text-transform: uppercase; color: #999; }
+.cw-count--ok b { color: #00a338; }
+.cw-count--warn b { color: #ff8700; }
+.cw-count--fail b { color: #ff460d; }
+/* Zero uwag i zero awarii przygaszamy: zero nie jest wiadomością, tylko jej brakiem. */
+.cw-count--zero b { color: #6b6b6b; }
+
+.cw-areas { display: flex; flex-wrap: wrap; gap: 6px 18px; margin: 0; padding: 0; list-style: none; font-size: 13px; }
+.cw-areas li { display: inline-flex; align-items: center; gap: 6px; }
+.cw-areas b { font-weight: 700; font-variant-numeric: tabular-nums; }
+.cw-areas__dot { width: 10px; height: 10px; border-radius: 50%; display: inline-block; flex: 0 0 auto; }
+
+/* Zachęta stoi na miejscu, w którym oceny nie ma — obok pustego pierścienia — więc mówi
+   o tym, czego tam brakuje, a nie o cenniku w oderwaniu od ekranu. */
+.cw-upsell { border-left: 3px solid #00a338; padding: 8px 12px; background: rgba(255, 255, 255, .04); }
+.cw-upsell h3 { margin: 0 0 6px; font-size: 14px; font-weight: 700; }
+.cw-upsell ul { margin: 0 0 10px 1.25rem; list-style: disc; }
+.cw-upsell li { margin-bottom: .25rem; }

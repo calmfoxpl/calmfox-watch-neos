@@ -189,6 +189,19 @@ i to nie jest przeoczenie: panel Neosa nie ma pulpitu, na którym dałoby się g
 powiesić (po zalogowaniu ląduje się wprost w module treści). Zamiast tego
 pozycja w menu jest jedno kliknięcie od każdego ekranu panelu.
 
+Na ekranie modułu stoi kondycja strony: pierścień 0-100 z pięciu obszarów, trzy
+liczniki sprawdzeń i legenda obszarów. Ocenę liczy hub (bierze pod uwagę uptime,
+przeglądy podstron i pomiary wydajności, o których ta instalacja nie ma pojęcia),
+pakiet ją wyłącznie rysuje - tym samym rysunkiem, co panel Calmfox Watch i aplikacja
+mobilna. Tam, gdzie oceny nie ma, czyli przed progiem Start albo zanim hub ją policzy,
+jej miejsce zajmuje tor bez wypełnienia: pokazuje kształt tego, co wchodzi wyżej,
+i świadomie nie podaje ŻADNEJ liczby o stanie strony.
+
+Jedna rzecz różni ten pierścień od pozostałych pakietów: barwy obszarów są w wariancie
+CIEMNYM (`SCORE_AREA_COLORS` z panelu), bo panel Neosa jest ciemny, a panele WordPressa,
+Magento i Syliusa są białe i biorą wariant jasny. Odcienie stoją w tym samym miejscu koła
+barw, więc legenda zgadza się między ekranami.
+
 ## Połączenie z panelem
 
 Trzy drogi, ta sama co we wtyczce WordPressa kolejność od najprostszej.

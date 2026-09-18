@@ -21,6 +21,7 @@ class Cache
     public const SMTP = 'smtp';
     public const ELASTICSEARCH = 'elasticsearch';
     public const INSTALL_SIZE = 'installSize';
+    public const SCORE = 'score';
 
     protected VariableFrontend $cache;
 
@@ -47,6 +48,17 @@ class Cache
         } catch (\Throwable) {
             // Brak zapisu oznacza tylko tyle, że następne odpytanie policzy
             // check od nowa. To gorsza wydajność, nie utrata monitoringu.
+        }
+    }
+
+    /** Skasowanie jednego wpisu: stara ocena nie ma prawa zostać po rozłączeniu. */
+    public function remove(string $key): void
+    {
+        try {
+            $this->cache->remove($key);
+        } catch (\Throwable) {
+            // Tak samo jak przy zapisie: brak skasowania to gorszy podgląd,
+            // nie utrata monitoringu — a wpis i tak wygaśnie sam.
         }
     }
 

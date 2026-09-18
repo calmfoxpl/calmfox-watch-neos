@@ -23,6 +23,13 @@ class HubClient
     /** Hub w trakcie obsługi robi challenge na naszą stronę, więc czekamy dłużej niż zwykle. */
     private const CALL_TIMEOUT = 25.0;
 
+    /**
+     * Ocena to zwykłe pytanie o gotową liczbę, bez challenge'u — a czeka na nią ekran
+     * modułu, który ma się otworzyć od razu. Dłuższe czekanie zamieniłoby ciszę huba
+     * w zawieszony panel.
+     */
+    private const SCORE_TIMEOUT = 8.0;
+
     #[Flow\InjectConfiguration(path: 'apiUrl', package: 'Calmfox.Watch')]
     protected string $configuredApiUrl = '';
 
@@ -116,6 +123,25 @@ class HubClient
     }
 
     /**
+     * Ocena kondycji strony policzona przez hub (0-100 z pięciu obszarów).
+     *
+     * To JEDYNE miejsce, w którym pakiet pyta hub o coś dla siebie: reszta kontraktu
+     * jest pull, ale ocena bierze pod uwagę uptime, przeglądy podstron i pomiary
+     * wydajności, o których ta instalacja nie ma pojęcia. Buforuje ScoreProvider.
+     *
+     * @return array{ok: bool, message: string, data: array<string, mixed>}
+     */
+    public function score(): array
+    {
+        $token = (string) $this->stateProvider->state()->get('installToken', '');
+        if ('' === $token) {
+            return ['ok' => false, 'message' => 'Strona nie jest połączona z Calmfox Watch.', 'data' => []];
+        }
+
+        return $this->call('/api/public/plugin/score', ['token' => $token], 200, self::SCORE_TIMEOUT);
+    }
+
+    /**
      * Rozłączenie. Sam klucz instalacyjny jest jawny, więc hub żąda też sekretu
      * z adresu kontrolnego: zna go wyłącznie ta instalacja. Robimy to najlepszym
      * staraniem, bo przy braku sieci hub i tak zauważy milczący adres.
@@ -178,14 +204,14 @@ class HubClient
      *
      * @return array{ok: bool, message: string, data: array<string, mixed>}
      */
-    private function call(string $path, array $body, int $expected): array
+    private function call(string $path, array $body, int $expected, ?float $timeout = null): array
     {
         $response = SimpleHttp::request(
             'POST',
             $this->apiUrl().$path,
             (string) json_encode($body),
             ['Content-Type' => 'application/json', 'Accept' => 'application/json'],
-            self::CALL_TIMEOUT
+            $timeout ?? self::CALL_TIMEOUT
         );
         if ('' !== $response['error']) {
             return ['ok' => false, 'data' => [], 'message' => 'Nie udało się połączyć z Calmfox Watch: '.$response['error']];

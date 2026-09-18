@@ -4,9 +4,12 @@ declare(strict_types=1);
 
 namespace Calmfox\Watch\Controller\Module;
 
+use Calmfox\Watch\Core\ScoreRing;
+use Calmfox\Watch\Core\StatusSummary;
 use Calmfox\Watch\Core\Version;
 use Calmfox\Watch\Service\HubClient;
 use Calmfox\Watch\Service\PayloadProvider;
+use Calmfox\Watch\Service\ScoreProvider;
 use Calmfox\Watch\Service\SiteUrl;
 use Calmfox\Watch\Service\StateProvider;
 use Calmfox\Watch\Service\UpdateCounter;
@@ -36,6 +39,9 @@ class WatchController extends AbstractModuleController
 
     #[Flow\Inject]
     protected PayloadProvider $payloadProvider;
+
+    #[Flow\Inject]
+    protected ScoreProvider $scoreProvider;
 
     #[Flow\Inject]
     protected VersionHistory $versionHistory;
@@ -101,10 +107,27 @@ class WatchController extends AbstractModuleController
         if ($connected) {
             $health = $this->payloadProvider->health();
             $security = $this->payloadProvider->security();
+            $score = $this->scoreProvider->score();
             $this->view->assignMultiple([
                 'health' => $health,
                 'security' => $security,
                 'history' => \array_slice($this->versionHistory->all(), 0, 10),
+                // Trzy liczby zamiast zdania, tak samo jak na kafelkach pozostałych pakietów.
+                'summary' => StatusSummary::of($health, $security),
+                'score' => $score,
+                'ring' => $this->ringForView($score),
+                // Tor bez wypełnienia stoi tam, gdzie oceny nie ma (Free albo jeszcze nie
+                // policzona): pokazuje KSZTAŁT tego, co wchodzi od progu Start, i nie udaje
+                // pomiaru — żadnej liczby o stanie strony przy nim nie ma.
+                'ringPlaceholder' => ScoreRing::placeholder(),
+                'ringBox' => ScoreRing::BOX,
+                'ringWidth' => ScoreRing::WIDTH,
+                'ringTrack' => ScoreRing::TRACK_COLOR,
+                'scoreTone' => null !== $score ? (string) ($score['tone'] ?? 'muted') : 'muted',
+                // Podpis rysunku dla czytnika ekranu składamy tutaj: Fluid nie umie wstawić
+                // argumentu w atrybut bez wywołania w wywołaniu, a pierścień bez podpisu
+                // jest dla czytnika pustym obrazkiem.
+                'scoreAria' => null !== $score ? sprintf('Kondycja strony: %s na 100.', (string) ($score['overall'] ?? '')) : '',
             ]);
         }
     }
@@ -337,7 +360,31 @@ class WatchController extends AbstractModuleController
     {
         $this->hubClient->disconnect();
         $this->stateProvider->state()->update(['connected' => false]);
+        // Ocena jest z huba i mówi o strony stanie: po rozłączeniu nie ma prawa
+        // zostać na ekranie ani wrócić z pamięci podręcznej po ponownym połączeniu.
+        $this->scoreProvider->forget();
         $this->addFlashMessage('Połączenie zakończone, monitoring wnętrza strony został wstrzymany. Klucz pozostaje zapisany, więc ponowne połączenie zajmie jedno kliknięcie.');
         $this->redirect('index');
+    }
+
+    /**
+     * Łuki gotowe dla Fluida: dokładamy `gap`, bo szablon nie umie dodać jedynki
+     * do długości łuku, a `stroke-dasharray` potrzebuje pary „wypełnienie przerwa".
+     *
+     * @param array<string, mixed>|null $score
+     *
+     * @return list<array<string, mixed>>
+     */
+    private function ringForView(?array $score): array
+    {
+        $segments = null !== $score && \is_array($score['ring'] ?? null) ? $score['ring'] : [];
+
+        $ring = [];
+        foreach ($segments as $segment) {
+            $segment['gap'] = (float) $segment['length'] + 1;
+            $ring[] = $segment;
+        }
+
+        return $ring;
     }
 }

@@ -211,6 +211,46 @@
 				<source>Manage plan and payments</source>
 				<target>Manage plan and payments</target>
 			</trans-unit>
+			<trans-unit id="score.title">
+				<source>Kondycja strony</source>
+				<target>Site health</target>
+			</trans-unit>
+			<trans-unit id="score.scale">
+				<source>na 100</source>
+				<target>out of 100</target>
+			</trans-unit>
+			<trans-unit id="score.countOk">
+				<source>w porządku</source>
+				<target>healthy</target>
+			</trans-unit>
+			<trans-unit id="score.countWarn">
+				<source>uwagi</source>
+				<target>warnings</target>
+			</trans-unit>
+			<trans-unit id="score.countFail">
+				<source>awarie</source>
+				<target>failures</target>
+			</trans-unit>
+			<trans-unit id="score.upsellTitle">
+				<source>Kondycja strony wchodzi od pakietu Start</source>
+				<target>Site health starts with the Start plan</target>
+			</trans-unit>
+			<trans-unit id="score.upsellItem1">
+				<source>ocena 0–100 z pięciu obszarów — ta, której miejsce widzisz obok</source>
+				<target>a 0–100 score across five areas — the one whose place you see next to this</target>
+			</trans-unit>
+			<trans-unit id="score.upsellItem2">
+				<source>sprawdzenia co minutę zamiast co pięć</source>
+				<target>checks every minute instead of every five</target>
+			</trans-unit>
+			<trans-unit id="score.upsellItem3">
+				<source>dobowe raporty: co się zmieniło i kiedy</source>
+				<target>daily reports: what changed and when</target>
+			</trans-unit>
+			<trans-unit id="score.upsellCta">
+				<source>Zobacz, co dokłada wyższy próg</source>
+				<target>See what a higher plan adds</target>
+			</trans-unit>
 		</body>
 	</file>
 </xliff>

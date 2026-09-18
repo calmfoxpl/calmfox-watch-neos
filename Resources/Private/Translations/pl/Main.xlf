@@ -212,6 +212,46 @@
 				<source>Zarządzaj pakietem i płatnościami</source>
 				<target>Zarządzaj pakietem i płatnościami</target>
 			</trans-unit>
+			<trans-unit id="score.title">
+				<source>Kondycja strony</source>
+				<target>Kondycja strony</target>
+			</trans-unit>
+			<trans-unit id="score.scale">
+				<source>na 100</source>
+				<target>na 100</target>
+			</trans-unit>
+			<trans-unit id="score.countOk">
+				<source>w porządku</source>
+				<target>w porządku</target>
+			</trans-unit>
+			<trans-unit id="score.countWarn">
+				<source>uwagi</source>
+				<target>uwagi</target>
+			</trans-unit>
+			<trans-unit id="score.countFail">
+				<source>awarie</source>
+				<target>awarie</target>
+			</trans-unit>
+			<trans-unit id="score.upsellTitle">
+				<source>Kondycja strony wchodzi od pakietu Start</source>
+				<target>Kondycja strony wchodzi od pakietu Start</target>
+			</trans-unit>
+			<trans-unit id="score.upsellItem1">
+				<source>ocena 0–100 z pięciu obszarów — ta, której miejsce widzisz obok</source>
+				<target>ocena 0–100 z pięciu obszarów — ta, której miejsce widzisz obok</target>
+			</trans-unit>
+			<trans-unit id="score.upsellItem2">
+				<source>sprawdzenia co minutę zamiast co pięć</source>
+				<target>sprawdzenia co minutę zamiast co pięć</target>
+			</trans-unit>
+			<trans-unit id="score.upsellItem3">
+				<source>dobowe raporty: co się zmieniło i kiedy</source>
+				<target>dobowe raporty: co się zmieniło i kiedy</target>
+			</trans-unit>
+			<trans-unit id="score.upsellCta">
+				<source>Zobacz, co dokłada wyższy próg</source>
+				<target>Zobacz, co dokłada wyższy próg</target>
+			</trans-unit>
 		</body>
 	</file>
 </xliff>

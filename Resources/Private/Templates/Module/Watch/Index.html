@@ -115,6 +115,116 @@
 			</div>
 
 			<!--
+				Kondycja strony: ta sama liczba i TEN SAM rysunek, co w panelu Calmfox Watch
+				i w aplikacji mobilnej. Ocenę liczy hub (bierze pod uwagę uptime, przeglądy
+				podstron i pomiary wydajności, o których ta instalacja nie ma pojęcia), pakiet
+				ją wyłącznie rysuje. Geometrię liczy ScoreRing, tutaj zostaje samo rysowanie:
+				bez JavaScriptu, bo panel nie ma powodu ładować skryptu dla obrazka.
+
+				Rysujemy w dwóch przebiegach: najpierw wszystkie tory („ile mogło być punktów"),
+				potem wypełnienia na wierzchu. Inaczej łuk sąsiada przykrywałby początek następnego.
+			-->
+			<div class="neos-row-fluid">
+				<fieldset>
+					<legend><f:translate id="score.title" package="Calmfox.Watch">Kondycja strony</f:translate></legend>
+					<div class="cw-score">
+						<div class="cw-ring">
+							<f:if condition="{ring}">
+								<f:then>
+									<svg viewBox="0 0 {ringBox} {ringBox}" role="img" aria-label="{scoreAria}">
+										<f:for each="{ring}" as="seg">
+											<path class="cw-arc{f:if(condition: seg.measured, then: '', else: ' cw-arc--unmeasured')}" d="{seg.d}" fill="none" stroke="{ringTrack}" stroke-width="{ringWidth}" stroke-linecap="round" />
+										</f:for>
+										<f:for each="{ring}" as="seg">
+											<f:if condition="{seg.fill} > 0">
+												<path d="{seg.d}" fill="none" stroke="{seg.color}" stroke-width="{ringWidth}" stroke-linecap="round" stroke-dasharray="{seg.fill} {seg.gap}" />
+											</f:if>
+										</f:for>
+										<!--
+											Liczba i skala w DWÓCH wierszach, oba wyśrodkowane: jeden wiersz
+											„82 na 100" centruje się jako całość, więc sama liczba uciekałaby
+											w lewo od środka pierścienia.
+										-->
+										<text x="110" y="116" text-anchor="middle" class="cw-ring__value cw-ring__value--{scoreTone}">{score.overall}</text>
+										<text x="110" y="142" text-anchor="middle" class="cw-ring__scale"><f:translate id="score.scale" package="Calmfox.Watch">na 100</f:translate></text>
+									</svg>
+								</f:then>
+								<f:else>
+									<svg viewBox="0 0 {ringBox} {ringBox}" aria-hidden="true">
+										<f:for each="{ringPlaceholder}" as="seg">
+											<path class="cw-arc cw-arc--unmeasured" d="{seg.d}" fill="none" stroke="{ringTrack}" stroke-width="{ringWidth}" stroke-linecap="round" />
+										</f:for>
+									</svg>
+								</f:else>
+							</f:if>
+						</div>
+
+						<div class="cw-score__rest">
+							<div class="cw-counts">
+								<span class="cw-count cw-count--ok{f:if(condition: summary.counts.ok, then: '', else: ' cw-count--zero')}">
+									<b>{summary.counts.ok}</b>
+									<span><f:translate id="score.countOk" package="Calmfox.Watch">w porządku</f:translate></span>
+								</span>
+								<span class="cw-count cw-count--warn{f:if(condition: summary.counts.warn, then: '', else: ' cw-count--zero')}">
+									<b>{summary.counts.warn}</b>
+									<span><f:translate id="score.countWarn" package="Calmfox.Watch">uwagi</f:translate></span>
+								</span>
+								<span class="cw-count cw-count--fail{f:if(condition: summary.counts.fail, then: '', else: ' cw-count--zero')}">
+									<b>{summary.counts.fail}</b>
+									<span><f:translate id="score.countFail" package="Calmfox.Watch">awarie</f:translate></span>
+								</span>
+							</div>
+
+							<f:if condition="{ring}">
+								<f:then>
+									<!--
+										Legenda: który obszar jest którą barwą i ile w nim punktów. Obszar
+										niezmierzony dostaje szarą kropkę i kreskę zamiast liczby — barwna
+										kropka sugerowałaby pomiar, który wyszedł zero.
+									-->
+									<ul class="cw-areas">
+										<f:for each="{ring}" as="seg">
+											<li>
+												<span class="cw-areas__dot" style="background: {f:if(condition: seg.measured, then: seg.color, else: '#c9c9c9')}"></span>
+												{seg.label}
+												<b>
+													<f:if condition="{seg.measured}">
+														<f:then>{seg.score}</f:then>
+														<f:else>—</f:else>
+													</f:if>
+												</b>
+											</li>
+										</f:for>
+									</ul>
+								</f:then>
+								<f:else>
+									<!--
+										Zachęta stoi TU, obok pustego pierścienia, a nie w oderwaniu od ekranu:
+										klient widzi dokładnie to miejsce, w którym oceny brakuje. Ceny nie
+										podajemy świadomie — cennik się zmienia, a ta wersja pakietu zostanie
+										na stronie na długo.
+									-->
+									<div class="cw-upsell">
+										<h3><f:translate id="score.upsellTitle" package="Calmfox.Watch">Kondycja strony wchodzi od pakietu Start</f:translate></h3>
+										<ul>
+											<li><f:translate id="score.upsellItem1" package="Calmfox.Watch">ocena 0–100 z pięciu obszarów — ta, której miejsce widzisz obok</f:translate></li>
+											<li><f:translate id="score.upsellItem2" package="Calmfox.Watch">sprawdzenia co minutę zamiast co pięć</f:translate></li>
+											<li><f:translate id="score.upsellItem3" package="Calmfox.Watch">dobowe raporty: co się zmieniło i kiedy</f:translate></li>
+										</ul>
+										<p>
+											<a class="neos-button neos-button-primary" target="_blank" rel="noopener" href="{planUrl}">
+												<f:translate id="score.upsellCta" package="Calmfox.Watch">Zobacz, co dokłada wyższy próg</f:translate>
+											</a>
+										</p>
+									</div>
+								</f:else>
+							</f:if>
+						</div>
+					</div>
+				</fieldset>
+			</div>
+
+			<!--
 				Pakiet strony. Zakup dzieje się w panelu (subskrypcja per strona), moduł tylko
 				prowadzi do właściwego miejsca w kontekście TEJ strony. Pakiet znamy z chwili
 				połączenia i tak to mówimy: źródłem prawdy jest panel.
