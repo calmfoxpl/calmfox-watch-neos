@@ -51,14 +51,22 @@ przejechane na żywej instalacji.
 
 ## Instalacja
 
-Pakiet nie jest opublikowany w publicznym katalogu pakietów Composera
-(Packagist), więc samo `composer require calmfox/watch-neos` kończy się błędem
-„could not be found". Instaluje się go z paczki `calmfox-watch-neos.zip`, którą
-podaje panel Calmfox Watch (Integracje, przycisk „Pobierz dla Neos CMS").
-W paczce jest jeden katalog: `Calmfox.Watch/`. Obie drogi niżej prowadzą do tego
-samego wyniku.
+Pakiet jest w publicznym katalogu pakietów Composera (Packagist) jako
+`calmfox/watch-neos`. Tam, gdzie serwis nie może z niego korzystać, instaluje się go
+z paczki `calmfox-watch-neos.zip`, którą podaje panel Calmfox Watch (Integracje,
+przycisk „Pobierz dla Neos CMS"). W paczce jest jeden katalog: `Calmfox.Watch/`.
+Wszystkie drogi niżej prowadzą do tego samego wyniku.
 
-### Droga 1: rozpakuj paczkę obok projektu i podłącz ją Composerem (zalecana)
+### Droga 1: Composer (zalecana)
+
+```bash
+composer require calmfox/watch-neos
+FLOW_CONTEXT=Production ./flow flow:cache:flush --force
+```
+
+Aktualizacja: `composer update calmfox/watch-neos`.
+
+### Droga 2: rozpakuj paczkę obok projektu i podłącz ją Composerem
 
 Kolejność jest taka: najpierw rozpakowanie paczki do katalogu w projekcie, potem
 wskazanie tego katalogu Composerowi jako repozytorium typu `path`, na końcu
@@ -85,14 +93,14 @@ Trzy miejsca, w których łatwo się potknąć:
   nie ma pola `version` (Composer wylicza wersję z tagu repozytorium, a paczka
   tagu nie ma), więc repozytorium typu `path` melduje ją jako `dev-main`.
 
-Aktualizacja: rozpakowanie nowszej paczki w to samo miejsce i
+Aktualizacja z paczki: rozpakowanie nowszej w to samo miejsce i
 `composer update calmfox/watch-neos`.
 
-### Droga 2: ręczne wgranie plików
+### Droga 3: ręczne wgranie plików
 
 **Tylko Neos 9.** Na Neosie 8.3 (Flow 8.3) ta droga u nas nie zadziałała: Flow
 widział pakiet, ale klas nie było w autoloaderze Composera i każde polecenie
-`./flow` kończyło się wyjątkiem. Na 8.3 zostaje droga 1.
+`./flow` kończyło się wyjątkiem. Na 8.3 zostają drogi 1 i 2.
 
 ```bash
 unzip calmfox-watch-neos.zip -d Packages/Application
@@ -111,7 +119,7 @@ opublikowałby je skryptem po instalacji.
 Jedno ostrzeżenie przy wdrożeniach z gita: bazowa dystrybucja Neosa trzyma cały
 katalog `Packages/` poza repozytorium (jego `.gitignore` ma wpis `/Packages/`),
 więc ręcznie wgrany pakiet albo trzeba z tego wpisu wyjąć, albo wgrywać po każdym
-wdrożeniu. Droga 1 tego kłopotu nie ma, bo pakiet wraca z `composer install`.
+wdrożeniu. Drogi 1 i 2 tego kłopotu nie mają, bo pakiet wraca z `composer install`.
 
 ### Wpięcie trasy adresu kontrolnego
 

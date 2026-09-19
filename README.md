@@ -52,14 +52,22 @@ exercised them on a live installation.
 
 ## Installation
 
-The package is not published in the public Composer package index (Packagist),
-so a plain `composer require calmfox/watch-neos` ends with a "could not be
-found" error. You install it from the `calmfox-watch-neos.zip` archive provided
-by the Calmfox Watch panel (Integrations, the "Download for Neos CMS" button).
-The archive contains a single directory: `Calmfox.Watch/`. Both routes below
-lead to the same result.
+The package is available in the public Composer package index (Packagist) as
+`calmfox/watch-neos`. Where a site cannot use Packagist, you install it from the
+`calmfox-watch-neos.zip` archive provided by the Calmfox Watch panel (Integrations,
+the "Download for Neos CMS" button). The archive contains a single directory:
+`Calmfox.Watch/`. All routes below lead to the same result.
 
-### Route 1: unpack the archive next to the project and hook it up with Composer (recommended)
+### Route 1: Composer (recommended)
+
+```bash
+composer require calmfox/watch-neos
+FLOW_CONTEXT=Production ./flow flow:cache:flush --force
+```
+
+Updating: `composer update calmfox/watch-neos`.
+
+### Route 2: unpack the archive next to the project and hook it up with Composer
 
 The order is: first unpack the archive into a directory inside the project, then
 point Composer at that directory as a `path` repository, and finally run
@@ -87,14 +95,14 @@ Three places where it is easy to trip up:
   version from the repository tag, and the archive has no tag), so the `path`
   repository reports it as `dev-main`.
 
-Updating: unpack the newer archive into the same place and run
+Updating from the archive: unpack the newer one into the same place and run
 `composer update calmfox/watch-neos`.
 
-### Route 2: copying the files manually
+### Route 3: copying the files manually
 
 **Neos 9 only.** On Neos 8.3 (Flow 8.3) this route did not work for us: Flow saw
 the package, but its classes were missing from the Composer autoloader and every
-`./flow` command ended with an exception. On 8.3, use route 1.
+`./flow` command ended with an exception. On 8.3, use route 1 or 2.
 
 ```bash
 unzip calmfox-watch-neos.zip -d Packages/Application
@@ -113,7 +121,7 @@ resources with a post-install script.
 One warning for deployments from git: the Neos base distribution keeps the whole
 `Packages/` directory out of the repository (its `.gitignore` has a `/Packages/`
 entry), so a manually copied package either has to be excluded from that entry
-or copied again after every deployment. Route 1 does not have this problem,
+or copied again after every deployment. Routes 1 and 2 do not have this problem,
 because the package comes back with `composer install`.
 
 ### Hooking up the health endpoint route
