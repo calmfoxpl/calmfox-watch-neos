@@ -1,29 +1,31 @@
-# Calmfox Watch dla Neos CMS
+# Calmfox Watch for Neos CMS
 
-Monitoring wnętrza strony opartej na Neosie (Flow) dla panelu
-[watch.calmfox.net](https://watch.calmfox.net). Pakiet realizuje ten sam kontrakt
-z hubem, co wtyczka WordPressa (`wp-plugin/calmfox-watch`, specyfikacja
-w `WTYCZKI.md` w korzeniu repozytorium): wystawia sekretny adres kontrolny,
-który hub odpytuje w modelu pull.
+**English** · [Polski](README.pl.md)
 
-Trzy rzeczy, które daje:
+Inside-the-site monitoring for sites built on Neos (Flow), reporting to the
+[watch.calmfox.net](https://watch.calmfox.net) panel. The package implements the
+same contract with Calmfox Watch as the WordPress plugin and the Magento and
+Sylius packages (same response shape, same signature, same pairing flow): it
+exposes a secret health endpoint that Calmfox Watch polls in a pull model.
 
-- **stan usług** — baza danych, miejsce na dysku, połączenie z serwerem poczty,
-  pamięć podręczna Flow, publikacja zasobów, repozytorium treści, opcjonalnie
-  kolejki zadań i wyszukiwarka;
-- **podstawowa higiena bezpieczeństwa** — tryb pracy aplikacji, wyciek
-  szczegółów błędów, uprawnienia plików i katalogów, konta administratorów,
-  pakiety deweloperskie na produkcji, zaległe aktualizacje;
-- **historia zmian wersji pakietów** — żeby dało się powiedzieć „awaria zaczęła
-  się godzinę po aktualizacji pakietu X".
+Three things it gives you:
 
-Czego pakiet **nie** robi i obiecywać nie będzie: nie skanuje złośliwego kodu,
-nie liczy sum kontrolnych plików, nie robi kopii zapasowych i nie wysyła
-dzienników zdarzeń.
+- **service status**: database, disk space, connection to the mail server,
+  Flow cache, resource publishing, content repository, and optionally job
+  queues and the search engine;
+- **basic security hygiene**: application context, leaking error details, file
+  and directory permissions, administrator accounts, development packages in
+  production, pending updates;
+- **package version change history**: so that you can say "the outage started
+  an hour after package X was updated".
+
+What the package does **not** do, and will not promise: it does not scan for
+malicious code, does not compute file checksums, does not make backups and does
+not ship event logs.
 
 ---
 
-## Wymagania i zakres wersji
+## Requirements and version range
 
 ```json
 "require": {
@@ -33,57 +35,66 @@ dzienników zdarzeń.
 }
 ```
 
-Zapis `^8.3 || ^9.0` znaczy „8.3 i nowsze w linii ósemki albo dowolne 9.x".
-Świadomie NIE piszemy `>=8.3`, bo to obiecywałoby zgodność z każdą przyszłą
-wersją główną, której nikt nie widział. I świadomie nie piszemy samego `^8.3`,
-bo Neos 9 jest wersją, na którą wdrożenia właśnie przechodzą.
+The constraint `^8.3 || ^9.0` means "8.3 and newer within the 8 line, or any
+9.x". We deliberately do NOT write `>=8.3`, because that would promise
+compatibility with every future major version nobody has seen yet. And we
+deliberately do not write just `^8.3`, because Neos 9 is the version deployments
+are moving to right now.
 
-Uczciwie o dwóch wersjach głównych: Neos 9 przepisał API repozytorium treści
-od nowa. Kod trzyma się tego, co jest stabilne w obu (`SiteRepository`,
-`CacheManager`, Flow Security, Doctrine), a tam, gdzie API się rozjeżdża,
-sprawdzenie **degraduje się do mniejszej informacji zamiast się wywracać**:
-check `content_repository` na Neosie 9 poda liczbę aktywnych stron bez liczby
-węzłów, zamiast rzucić wyjątkiem. Pakiet był budowany i uruchamiany przeciwko
-API Neosa 8.3; na 9.0 ścieżki zgodności są napisane, ale nie były przez nas
-przejechane na żywej instalacji.
+To be honest about the two major versions: Neos 9 rewrote the content repository
+API from scratch. The code sticks to what is stable in both (`SiteRepository`,
+`CacheManager`, Flow Security, Doctrine), and where the APIs diverge, the check
+**degrades to less information instead of falling over**: on Neos 9 the
+`content_repository` check reports the number of active sites without the node
+count, rather than throwing an exception. The package was built and run against
+the Neos 8.3 API; for 9.0 the compatibility paths are written, but we have not
+exercised them on a live installation.
 
-## Instalacja
+## Installation
 
-Pakiet nie jest opublikowany w publicznym katalogu pakietów Composera
-(Packagist), więc samo `composer require calmfox/watch-neos` kończy się błędem
-„could not be found". Instaluje się go z paczki `calmfox-watch-neos.zip`, którą
-podaje panel Calmfox Watch (Integracje, przycisk „Pobierz dla Neos CMS").
-W paczce jest jeden katalog: `Calmfox.Watch/`. Obie drogi niżej prowadzą do tego
-samego wyniku.
+The package is not published in the public Composer package index (Packagist),
+so a plain `composer require calmfox/watch-neos` ends with a "could not be
+found" error. You install it from the `calmfox-watch-neos.zip` archive provided
+by the Calmfox Watch panel (Integrations, the "Download for Neos CMS" button).
+The archive contains a single directory: `Calmfox.Watch/`. Both routes below
+lead to the same result.
 
-### Droga 1: Composerem z rozpakowanej paczki (zalecana)
+### Route 1: unpack the archive next to the project and hook it up with Composer (recommended)
 
-Composer uruchamia wtedy instalator Neosa, przelicza autoloader i publikuje
-zasoby, czyli robi to samo, co przy pakiecie pobranym z Packagista:
+The order is: first unpack the archive into a directory inside the project, then
+point Composer at that directory as a `path` repository, and finally run
+`composer require`. Composer then runs the Neos installer, rebuilds the
+autoloader and publishes resources, which is exactly what happens with a package
+downloaded from Packagist:
 
 ```bash
-mkdir -p PakietyCalmfox && unzip calmfox-watch-neos.zip -d PakietyCalmfox
-composer config repositories.calmfox-watch '{"type":"path","url":"./PakietyCalmfox/Calmfox.Watch","options":{"symlink":false}}'
+mkdir -p CalmfoxPackages && unzip calmfox-watch-neos.zip -d CalmfoxPackages
+composer config repositories.calmfox-watch '{"type":"path","url":"./CalmfoxPackages/Calmfox.Watch","options":{"symlink":false}}'
 composer require calmfox/watch-neos:@dev
 FLOW_CONTEXT=Production ./flow flow:cache:flush --force
 ```
 
-Trzy miejsca, w których łatwo się potknąć:
+Three places where it is easy to trip up:
 
-- **`"symlink": false`** każe Composerowi skopiować pliki. Bez tego pakiet
-  w `Packages/Application` jest wyłącznie dowiązaniem do `PakietyCalmfox`
-  i zniknie razem z tym katalogiem.
-- **Rozpakowany katalog zostaje w projekcie** (i w repozytorium, jeżeli wdrożenie
-  idzie z gita). Composer czyta go przy każdym `composer install`, więc jego
-  skasowanie wywróci następne wdrożenie.
-- **`@dev` przy nazwie pakietu jest konieczne.** `composer.json` paczki świadomie
-  nie ma pola `version` (Composer wylicza wersję z tagu repozytorium, a paczka
-  tagu nie ma), więc repozytorium typu `path` melduje ją jako `dev-main`.
+- **`"symlink": false`** tells Composer to copy the files. Without it, the
+  package in `Packages/Application` is merely a symlink to `CalmfoxPackages` and
+  will disappear together with that directory.
+- **The unpacked directory stays in the project** (and in the repository, if you
+  deploy from git). Composer reads it on every `composer install`, so deleting
+  it will break the next deployment.
+- **The `@dev` after the package name is required.** The archive's
+  `composer.json` deliberately has no `version` field (Composer derives the
+  version from the repository tag, and the archive has no tag), so the `path`
+  repository reports it as `dev-main`.
 
-Aktualizacja: rozpakowanie nowszej paczki w to samo miejsce i
+Updating: unpack the newer archive into the same place and run
 `composer update calmfox/watch-neos`.
 
-### Droga 2: ręczne wgranie plików
+### Route 2: copying the files manually
+
+**Neos 9 only.** On Neos 8.3 (Flow 8.3) this route did not work for us: Flow saw
+the package, but its classes were missing from the Composer autoloader and every
+`./flow` command ended with an exception. On 8.3, use route 1.
 
 ```bash
 unzip calmfox-watch-neos.zip -d Packages/Application
@@ -91,30 +102,34 @@ FLOW_CONTEXT=Production ./flow flow:cache:flush --force
 FLOW_CONTEXT=Production ./flow resource:publish
 ```
 
-Flow znajduje pakiety, przeszukując katalog `Packages` w poszukiwaniu plików
-`composer.json`, i sam dokłada przestrzenie nazw z sekcji `autoload` pakietu do
-swojego class loadera, więc pakiet działa również bez wpisu w `composer.json`
-projektu. Oba polecenia po rozpakowaniu są przy tej drodze obowiązkowe: wynik
-przeszukiwania leży w pamięci podręcznej (bez przeczyszczenia Flow nie zobaczy
-ani pakietu, ani jego poleceń), a zasoby publiczne nie mają tu Composera, który
-opublikowałby je skryptem po instalacji.
+Flow discovers packages by scanning the `Packages` directory for `composer.json`
+files, and it adds the namespaces from the package's `autoload` section to its
+own class loader, so the package also works without an entry in the project's
+`composer.json`. With this route both commands after unpacking are mandatory:
+the scan result lives in the cache (without a flush Flow will see neither the
+package nor its commands), and there is no Composer here to publish the public
+resources with a post-install script.
 
-Jedno ostrzeżenie przy wdrożeniach z gita: bazowa dystrybucja Neosa trzyma cały
-katalog `Packages/` poza repozytorium (jego `.gitignore` ma wpis `/Packages/`),
-więc ręcznie wgrany pakiet albo trzeba z tego wpisu wyjąć, albo wgrywać po każdym
-wdrożeniu. Droga 1 tego kłopotu nie ma, bo pakiet wraca z `composer install`.
+One warning for deployments from git: the Neos base distribution keeps the whole
+`Packages/` directory out of the repository (its `.gitignore` has a `/Packages/`
+entry), so a manually copied package either has to be excluded from that entry
+or copied again after every deployment. Route 1 does not have this problem,
+because the package comes back with `composer install`.
 
-### Wpięcie trasy adresu kontrolnego
+### Hooking up the health endpoint route
 
-Neos ma dwa mechanizmy tras i to on decyduje, czy musisz cokolwiek robić.
+Neos has two routing mechanisms, and which one you use decides whether you need
+to do anything at all.
 
-**Dystrybucja bez `Configuration/Routes.yaml` w projekcie** (tak wygląda bazowa
-dystrybucja Neosa 9): trasy powstają wyłącznie z ustawienia `Neos.Flow.mvc.routes`,
-a pakiet rejestruje się tam sam, tak samo jak robi to `Neos.Media`. Nie musisz
-zmieniać niczego w projekcie. Sprawdzone na żywej instalacji Neos 9.1.5.
+**A distribution without `Configuration/Routes.yaml` in the project** (this is
+what the Neos 9 base distribution looks like): routes are built solely from the
+`Neos.Flow.mvc.routes` setting, and the package registers itself there, the same
+way `Neos.Media` does. You do not need to change anything in the project.
+Verified on a live Neos 9.1.5 installation.
 
-**Dystrybucja z `Configuration/Routes.yaml` w projekcie**: dopisz podtrasę
-**przed** trasami `Neos.Neos`, bo one łapią każdy pozostały adres jako podstronę:
+**A distribution with `Configuration/Routes.yaml` in the project**: add the
+subroute **before** the `Neos.Neos` routes, because those catch every remaining
+URL as a page:
 
 ```yaml
 -
@@ -124,7 +139,7 @@ zmieniać niczego w projekcie. Sprawdzone na żywej instalacji Neos 9.1.5.
     CalmfoxWatchSubroutes:
       package: 'Calmfox.Watch'
 
-# ...poniżej trasy, które już masz, w tym Neos:
+# ...below, the routes you already have, including Neos:
 -
   name: 'Neos'
   uriPattern: '<NeosSubroutes>'
@@ -133,266 +148,285 @@ zmieniać niczego w projekcie. Sprawdzone na żywej instalacji Neos 9.1.5.
       package: 'Neos.Neos'
 ```
 
-Samodzielna rejestracja z ustawień zostaje wtedy bezczynna i **nie przeszkadza**:
-Flow dokleja trasy z ustawień ZA trasami z pliku (`RoutesLoader`: „Routes from
-settings will always be appended to existing route definitions"), więc lądują za
-łapaczem Neosa i nigdy nie pasują. Nie ma tu żadnego wykluczania się mechanizmów,
-wcześniejsze wydanie tego pakietu ostrzegało przed tym błędnie.
+The self-registration from settings then sits idle and **does not get in the
+way**: Flow appends routes from settings AFTER the routes from the file
+(`RoutesLoader`: "Routes from settings will always be appended to existing route
+definitions"), so they end up behind the Neos catch-all and never match. The two
+mechanisms are not mutually exclusive; an earlier release of this package
+wrongly warned that they were.
 
-Jeżeli chcesz inną ścieżkę niż `/calmfox-watch/health`, zmień `uriPattern`
-w `Configuration/Routes.yaml` pakietu i tę samą wartość w ustawieniu
-`Calmfox.Watch.healthPath`, bo z niego budujemy adres zgłaszany hubowi.
+If you want a path other than `/calmfox-watch/health`, change `uriPattern` in
+the package's `Configuration/Routes.yaml` and set the same value in the
+`Calmfox.Watch.healthPath` setting, because that is what we build the URL
+reported to Calmfox Watch from.
 
-### Uruchamianie ./flow i przeczyszczanie pamięci podręcznej
+### Running ./flow and flushing the cache
 
-Sprawdzone na hostingu współdzielonym (cyber-Folks, LiteSpeed, Neos 9.1.5):
+Verified on shared hosting (cyber-Folks, LiteSpeed, Neos 9.1.5):
 
-- **Podaj kontekst jawnie**: `FLOW_CONTEXT=Production ./flow ...`. Bez tego Flow
-  startuje w kontekście Development i wywala się na pierwszym poleceniu.
-- **Użyj tej binarki PHP, którą ma skonfigurowaną Flow.** Gdy `php` w PATH jest
-  inne (u nas CLI dawało 8.2, a aplikacja chodzi na 8.4), Flow przerywa
-  polecenie i podaje właściwą ścieżkę, np.
+- **Pass the context explicitly**: `FLOW_CONTEXT=Production ./flow ...`. Without
+  it Flow starts in the Development context and crashes on the first command.
+- **Use the PHP binary Flow is configured with.** When the `php` in PATH is a
+  different one (for us the CLI gave 8.2 while the application runs on 8.4),
+  Flow aborts the command and prints the right path, e.g.
   `FLOW_CONTEXT=Production /opt/alt/php84/usr/bin/php ./flow calmfoxwatch:status`.
-- **Po instalacji trzeba przeczyścić pamięć podręczną**, inaczej Flow nie widzi
-  ani nowych poleceń, ani trasy: `FLOW_CONTEXT=Production ./flow flow:cache:flush --force`.
-- **Po podmianie plików pakietu opublikuj zasoby**: `FLOW_CONTEXT=Production ./flow resource:publish`.
-  Arkusz stylów modułu leży w `Resources/Public`, a Flow serwuje takie pliki z kopii
-  w `Web/_Resources`. Bez publikacji ekran modułu wstaje bez kolorów, a arkusz oddaje 404
-  (sprawdzone: po samym rozpakowaniu paczki adres arkusza zwracał 404, po `resource:publish`
-  kod 200). `composer require` robi to za Ciebie, ręczna podmiana plików nie.
-- **Licz się z krótkim oknem HTTP 503 zaraz po przeczyszczeniu.** Flow przebudowuje
-  wtedy klasy proxy i odbicia; na średniej wielkości stronie trwało to kilkanaście
-  sekund, a żądania w tym czasie dostawały 503. Rób to poza szczytem, a zaraz po
-  przeczyszczeniu odpal `FLOW_CONTEXT=Production ./flow flow:cache:warmup` albo
-  po prostu wejdź na stronę, żeby to Ty zapłacił za pierwsze żądanie, nie klient.
+- **After installation you have to flush the cache**, otherwise Flow sees
+  neither the new commands nor the route: `FLOW_CONTEXT=Production ./flow flow:cache:flush --force`.
+- **After replacing the package files, publish the resources**: `FLOW_CONTEXT=Production ./flow resource:publish`.
+  The module's stylesheet lives in `Resources/Public`, and Flow serves such files from a copy
+  in `Web/_Resources`. Without publishing, the module screen comes up without colours and the
+  stylesheet returns 404 (verified: right after unpacking the archive the stylesheet URL returned
+  404, after `resource:publish` it returned 200). `composer require` does this for you, replacing
+  the files by hand does not.
+- **Expect a short window of HTTP 503 right after the flush.** Flow rebuilds its
+  proxy classes and reflection data at that point; on a medium-sized site it
+  took a dozen or so seconds, and requests during that time got a 503. Do it
+  off-peak, and right after the flush run
+  `FLOW_CONTEXT=Production ./flow flow:cache:warmup` or simply open the site, so
+  that you pay for the first request, not a visitor.
 
-Po wpięciu sprawdź:
+Once the route is hooked up, check:
 
 ```bash
 ./flow calmfoxwatch:status
 ```
 
-Polecenie wypisze adres kontrolny i wynik samokontroli (żądanie z serwera do
-własnego adresu). Jeżeli samokontrola zgłasza problem, parowanie też się nie
-uda: najczęstsze powody to niewpięta trasa i zapora sieciowa blokująca
-nietypową ścieżkę.
+The command prints the health endpoint URL and the result of the self-check (a
+request from the server to its own URL). If the self-check reports a problem,
+pairing will fail too: the most common causes are a route that is not hooked up
+and a firewall blocking the unusual path.
 
-## Moduł w panelu
+## The module in the Neos backend
 
-Pakiet zakłada WŁASNĄ grupę modułów w menu panelu, nad „Zarządzaniem", zamiast
-chować się w jego podmodułach: monitoring, do którego trzeba się doklikać przez
-dwa poziomy, ogląda wyłącznie ten, kto go szuka. Grupa i jej pozycja „Kondycja
-strony" prowadzą do tego samego ekranu, tak samo jak w grupach Neosa.
+The package creates its OWN module group in the backend menu, above
+"Management", instead of hiding among its submodules: monitoring you have to
+click through two levels to reach is only ever looked at by someone searching
+for it. The group and its "Site health" item lead to the same screen, just like
+in Neos's own groups.
 
-Kafelka na pulpicie, który dostają WordPress, Sylius i Magento, w Neosie nie ma
-i to nie jest przeoczenie: panel Neosa nie ma pulpitu, na którym dałoby się go
-powiesić (po zalogowaniu ląduje się wprost w module treści). Zamiast tego
-pozycja w menu jest jedno kliknięcie od każdego ekranu panelu.
+The dashboard tile that WordPress, Sylius and Magento get does not exist in
+Neos, and that is not an oversight: the Neos backend has no dashboard to hang it
+on (after signing in you land straight in the content module). Instead, the menu
+item is one click away from every backend screen.
 
-Na ekranie modułu stoi kondycja strony: pierścień 0-100 z pięciu obszarów, trzy
-liczniki sprawdzeń i legenda obszarów. Ocenę liczy hub (bierze pod uwagę uptime,
-przeglądy podstron i pomiary wydajności, o których ta instalacja nie ma pojęcia),
-pakiet ją wyłącznie rysuje - tym samym rysunkiem, co panel Calmfox Watch i aplikacja
-mobilna. Tam, gdzie oceny nie ma, czyli przed progiem Start albo zanim hub ją policzy,
-jej miejsce zajmuje tor bez wypełnienia: pokazuje kształt tego, co wchodzi wyżej,
-i świadomie nie podaje ŻADNEJ liczby o stanie strony.
+The module screen shows the site health: a 0-100 ring made of five areas, three
+check counters and a legend of the areas. The score is computed by Calmfox Watch
+(it takes into account uptime, page reviews and performance measurements, which
+this installation knows nothing about); the package only draws it - with the
+same drawing as the Calmfox Watch panel and the mobile app. Where there is no
+score, that is below the Start plan or before Calmfox Watch has computed it, its
+place is taken by an unfilled track: it shows the shape of what a higher plan
+brings and deliberately gives NO number about the state of the site.
 
-Jedna rzecz różni ten pierścień od pozostałych pakietów: barwy obszarów są w wariancie
-CIEMNYM (`SCORE_AREA_COLORS` z panelu), bo panel Neosa jest ciemny, a panele WordPressa,
-Magento i Syliusa są białe i biorą wariant jasny. Odcienie stoją w tym samym miejscu koła
-barw, więc legenda zgadza się między ekranami.
+One thing sets this ring apart from the other packages: the area colours use the
+DARK variant (the same one the Calmfox Watch panel shows in its dark theme),
+because the Neos backend is dark, while the WordPress, Magento and Sylius
+backends are white and take the light variant. The hues sit at the same spot on
+the colour wheel, so the legend matches between screens.
 
-## Połączenie z panelem
+## Connecting to the Calmfox Watch panel
 
-Trzy drogi, ta sama co we wtyczce WordPressa kolejność od najprostszej.
+Three routes, in the same order as in the WordPress plugin, starting with the
+simplest.
 
-**1. Przez panel Calmfox Watch (zalecane).** W module klikasz „Połącz przez
-Calmfox Watch". Przechodzisz do panelu, logujesz się albo zakładasz konto,
-wybierasz organizację, a panel odsyła Cię z powrotem na ten ekran i pakiet
-paruje się sam. Nie przepisujesz żadnych kluczy.
+**1. Via the Calmfox Watch panel (recommended).** In the module you click
+"Connect via Calmfox Watch". You go to the panel, sign in or create an account,
+pick an organisation, and the panel sends you back to this screen and the
+package pairs itself. You do not copy any keys.
 
-Zabezpieczenie tej drogi: przed wyjściem pakiet zapisuje jednorazowy znacznik
-i wysyła go w adresie, a przy powrocie porównuje w stałym czasie i kasuje
-NIEZALEŻNIE od wyniku. Panel ze swojej strony wraca wyłącznie pod adres na
-domenie łączonej strony, którego ścieżka zawiera `/neos/`. Bez obu tych bramek
-wystarczyłoby podrzucić administratorowi link z cudzym kluczem, żeby podpiąć
-stronę pod obce konto.
+How this route is secured: before you leave, the package stores a one-time token
+and sends it in the URL, and on return it compares it in constant time and
+deletes it REGARDLESS of the result. The panel, for its part, only returns to a
+URL on the domain of the site being connected whose path contains `/neos/`.
+Without both of these gates it would be enough to slip an administrator a link
+with someone else's key in order to attach the site to a foreign account.
 
-Adres powrotny bierzemy z bieżącego żądania, a nie z nazwy modułu, więc działa
-także wtedy, gdy prefiks panelu Neosa jest w projekcie zmieniony. Jeśli adresu
-nie da się ustalić, przycisk po prostu się nie pokazuje i zostają dwie drogi niżej.
+We take the return URL from the current request, not from the module name, so it
+also works when the project has changed the Neos backend prefix. If the URL
+cannot be determined, the button simply does not appear and the two routes below
+remain.
 
-**2. Kluczem instalacyjnym.** Skopiuj klucz `fxp_live_…` z ekranu Integracje
-w panelu i wklej w module albo podaj poleceniu konsoli.
+**2. With an installation key.** Copy the `fxp_live_…` key from the Integrations
+screen in the Calmfox Watch panel and paste it into the module or pass it to the
+console command.
 
-**3. Z konsoli, bez klikania** (wdrożenia z repozytorium):
+**3. From the console, without clicking** (deployments from a repository):
 
 ```bash
-# nowe konto w pakiecie Free
-FLOW_CONTEXT=Production ./flow calmfoxwatch:register wlasciciel@example.com
+# a new account on the Free plan
+FLOW_CONTEXT=Production ./flow calmfoxwatch:register owner@example.com
 
-# albo dopięcie do istniejącej strony w panelu
+# or attach to a site that already exists in the Calmfox Watch panel
 FLOW_CONTEXT=Production ./flow calmfoxwatch:pair fxp_live_0123456789abcdef
 ```
 
-## Polecenia konsoli
+## Console commands
 
-| Polecenie | Do czego |
+| Command | What for |
 |---|---|
-| `./flow calmfoxwatch:status` | stan połączenia, adres kontrolny, samokontrola |
-| `./flow calmfoxwatch:register <email>` | aktywacja pakietu Free na podany adres |
-| `./flow calmfoxwatch:pair <token>` | połączenie z istniejącą stroną w panelu |
-| `./flow calmfoxwatch:disconnect` | zakończenie monitoringu wnętrza |
-| `./flow calmfoxwatch:updates` | przeliczenie zaległych aktualizacji (do zadań cyklicznych) |
-| `./flow calmfoxwatch:health [--section security]` | wypisanie payloadu lokalnie |
-| `./flow calmfoxwatch:rotate` | wymiana sekretu i przepięcie monitoringu |
+| `./flow calmfoxwatch:status` | connection status, health endpoint URL, self-check |
+| `./flow calmfoxwatch:register <email>` | activates the Free plan for the given address |
+| `./flow calmfoxwatch:pair <token>` | connects to a site that already exists in the Calmfox Watch panel |
+| `./flow calmfoxwatch:disconnect` | ends the inside-the-site monitoring |
+| `./flow calmfoxwatch:updates` | recalculates pending updates (for scheduled jobs) |
+| `./flow calmfoxwatch:health [--section security]` | prints the payload locally |
+| `./flow calmfoxwatch:rotate` | rotates the secret and re-points the monitoring |
 
-### Zadanie cykliczne dla aktualizacji
+### Scheduled job for updates
 
-`composer outdated` chodzi po sieci i potrafi trwać kilkanaście sekund, więc
-adres kontrolny go NIE uruchamia. Liczby powstają w poleceniu i lądują w pliku
-stanu:
+`composer outdated` goes out to the network and can take a dozen or so seconds,
+so the health endpoint does NOT run it. The numbers are produced by the command
+and land in the state file:
 
 ```cron
-17 4 * * * cd /var/www/strona && ./flow calmfoxwatch:updates >/dev/null 2>&1
+17 4 * * * cd /var/www/site && ./flow calmfoxwatch:updates >/dev/null 2>&1
 ```
 
-Dopóki nikt tego nie uruchomi, pakiet mówi wprost „nie sprawdzamy" i **pomija
-pole `updates` w payloadzie w całości**. To nie jest niedoróbka: zero znaczy
-„sprawdzone, nie ma czego aktualizować", a brak pola znaczy „nie wiemy" i tak
-to opisuje panel.
+Until somebody runs it, the package says plainly "not checked" and **omits the
+`updates` field from the payload entirely**. This is not an unfinished corner:
+zero means "checked, nothing to update", while a missing field means "we do not
+know", and that is how the Calmfox Watch panel describes it.
 
-## Ustawienia
+## Settings
 
-`Configuration/Settings.yaml` projektu, sekcja `Calmfox.Watch`:
+The project's `Configuration/Settings.yaml`, section `Calmfox.Watch`:
 
-| Ustawienie | Domyślnie | Do czego |
+| Setting | Default | What for |
 |---|---|---|
-| `apiUrl` | `https://watch.calmfox.net` | adres API; zmienna środowiskowa `CALMFOX_WATCH_API_URL` ma pierwszeństwo |
-| `healthPath` | `/calmfox-watch/health` | ścieżka adresu kontrolnego; musi zgadzać się z `uriPattern` z tras |
-| `statePath` | `%FLOW_PATH_DATA%Persistent/CalmfoxWatch/state.json` | plik stanu |
-| `smtp.host`, `smtp.port`, `smtp.encryption` | puste | jawne nadpisanie konfiguracji poczty |
-| `composerBinary` | puste | ścieżka do Composera dla polecenia `:updates` |
+| `apiUrl` | `https://watch.calmfox.net` | API URL; the `CALMFOX_WATCH_API_URL` environment variable takes precedence |
+| `healthPath` | `/calmfox-watch/health` | path of the health endpoint; must match the `uriPattern` from the routes |
+| `statePath` | `%FLOW_PATH_DATA%Persistent/CalmfoxWatch/state.json` | state file |
+| `smtp.host`, `smtp.port`, `smtp.encryption` | empty | explicit override of the mail configuration |
+| `composerBinary` | empty | path to Composer for the `:updates` command |
 
-### Dlaczego stan siedzi w pliku, a nie w bazie
+### Why the state lives in a file, not in the database
 
-Bo cała wartość tego monitoringu ujawnia się dokładnie wtedy, gdy baza leży.
-Przy padniętej bazie adres kontrolny ma odpowiedzieć `db: fail` i kodem 503,
-a nie zamilknąć. Gdyby sekret trzymała tabela, strona przestałaby odpowiadać
-w tym jednym momencie, w którym naprawdę zarabia.
+Because the whole value of this monitoring shows up exactly when the database is
+down. With a dead database the health endpoint has to answer `db: fail` with a
+503, not go silent. If the secret were kept in a table, the site would stop
+answering at the one moment it really earns its keep.
 
-Plik zapisujemy atomowo (zapis do pliku tymczasowego i podmiana), z prawami 600.
-Przy kilku instancjach aplikacji za load balancerem wskaż `statePath` na wspólny
-wolumen: sekret musi być dla nich jeden, inaczej hub trafi raz na jedną, raz na
-drugą i dostanie 403.
+We write the file atomically (write to a temporary file, then swap), with 600
+permissions. With several application instances behind a load balancer, point
+`statePath` at a shared volume: they must all have the same secret, otherwise
+Calmfox Watch will hit one instance, then another, and get a 403.
 
-## Adres kontrolny
+## Health endpoint
 
 ```
-GET https://domena/calmfox-watch/health?key=<32 znaki hex>
-GET https://domena/calmfox-watch/health?key=…&section=security
-GET https://domena/calmfox-watch/health?key=…&nonce=<znacznik jednorazowy>
+GET https://domain/calmfox-watch/health?key=<32 hex characters>
+GET https://domain/calmfox-watch/health?key=…&section=security
+GET https://domain/calmfox-watch/health?key=…&nonce=<one-time token>
 ```
 
-- zły albo brak klucza: `403` i suche `{"error":"forbidden"}`,
-- `200` przy `ok` i `warn`, `503` przy `fail`, nic innego,
-- nagłówki `Cache-Control: no-store, max-age=0` i `X-Robots-Tag: noindex, nofollow`,
-- przy `nonce` odpowiedź jest podpisana nagłówkami `X-Calmfox-Proof`
-  i `X-Calmfox-Generated-At`.
+- wrong or missing key: `403` and a bare `{"error":"forbidden"}`,
+- `200` for `ok` and `warn`, `503` for `fail`, nothing else,
+- the headers `Cache-Control: no-store, max-age=0` and `X-Robots-Tag: noindex, nofollow`,
+- with `nonce`, the response is signed with the `X-Calmfox-Proof`
+  and `X-Calmfox-Generated-At` headers.
 
-Podpis idzie nagłówkiem, a nie w treści, bo liczymy go nad **dokładnie tymi
-bajtami**, które wychodzą na łącze. Kontroler świadomie sam składa JSON
-i pomija warstwę widoku, żeby między `json_encode` a łączem nie stanął żaden
-renderer.
+The signature travels in a header, not in the body, because we compute it over
+**exactly the bytes** that go out on the wire. The controller deliberately
+assembles the JSON itself and bypasses the view layer, so that no renderer
+stands between `json_encode` and the wire.
 
-Granica ochrony, mówimy o niej wprost: kto ma sekret z serwera, może podpisać
-kłamstwo. Podpis odcina tanie ataki (podstawiony plik statyczny, odpowiedź
-z pamięci podręcznej, powtórka sprzed przejęcia strony), a nie zastępuje
-odzyskiwania serwera.
+The limit of this protection, stated plainly: whoever has the secret from the
+server can sign a lie. The signature cuts off cheap attacks (a planted static
+file, a cached response, a replay from before the site was taken over); it does
+not replace recovering the server.
 
-Rotacja sekretu: nowy działa od razu, poprzedni jeszcze przez 15 minut, żeby
-nieudane przepięcie po stronie panelu nie zerwało monitoringu.
+Secret rotation: the new one works immediately, the previous one for another
+15 minutes, so that a failed re-pointing on the Calmfox Watch side does not
+break the monitoring.
 
-## Sprawdzenia
+## Checks
 
-### Sekcja `health` (sonda odpytuje co 60 s, wynik żyje 60 s)
+### The `health` section (the probe polls every 60 s, the result lives for 60 s)
 
-| Identyfikator | Co sprawdza |
+| Id | What it checks |
 |---|---|
-| `db` | `SELECT 1` przez Doctrine, z pomiarem czasu. Brak bazy to `fail`, nie wyjątek |
-| `disk` | zapisywalność `Data/Persistent` i `Web/_Resources` oraz zajętość względem limitu |
-| `smtp` | POŁĄCZENIE z serwerem poczty (TCP, powitanie 220, EHLO). Wynik żyje 15 minut |
-| `flow_cache` | zapis i odczyt klucza kontrolnego przez `CacheManager` |
-| `resources` | zapisywalność katalogu publikacji zasobów |
-| `content_repository` | czy jest aktywna strona i węzeł główny w gałęzi live |
-| `queue` | zaległości w kolejkach `Flowpack.JobQueue` (opcjonalny) |
-| `elasticsearch` | stan klastra przez `/_cluster/health` (opcjonalny, wynik żyje 5 minut) |
+| `db` | `SELECT 1` through Doctrine, with timing. No database is a `fail`, not an exception |
+| `disk` | writability of `Data/Persistent` and `Web/_Resources`, and usage against the quota |
+| `smtp` | the CONNECTION to the mail server (TCP, 220 greeting, EHLO). The result lives for 15 minutes |
+| `flow_cache` | writing and reading a control key through `CacheManager` |
+| `resources` | writability of the resource publishing directory |
+| `content_repository` | whether there is an active site and a root node in the live workspace |
+| `queue` | backlog in the `Flowpack.JobQueue` queues (optional) |
+| `elasticsearch` | cluster status via `/_cluster/health` (optional, the result lives for 5 minutes) |
 
-Checki opcjonalne są **pomijane w całości**, gdy strona nie ma danego pakietu.
-Nie wysyłamy „ok" o usłudze, której nie ma.
+Optional checks are **skipped entirely** when the site does not have the
+relevant package. We do not send an "ok" about a service that is not there.
 
-O dwóch rzeczach mówimy wprost, bo inaczej byłoby to zmyślanie:
+Two things we state plainly, because anything else would be making things up:
 
-- **`smtp` to test połączenia, nie doręczenia.** Nie wysyłamy wiadomości
-  próbnych. Gdy poczta wychodzi przez API dostawcy (SES, SendGrid, Mailgun,
-  Postmark), piszemy to w opisie i nie udajemy testu SMTP.
-- **`disk` na hostingu współdzielonym nie zna limitu konta.** `disk_free_space()`
-  raportuje tam cały wolumen serwera, więc takiej liczby nie pokazujemy. Podaj
-  limit w module (albo w ustawieniach), a zaczniemy pilnować zajętości.
+- **`smtp` tests the connection, not delivery.** We do not send test messages.
+  When mail goes out through a provider's API (SES, SendGrid, Mailgun,
+  Postmark), we say so in the detail and do not pretend to have tested SMTP.
+- **`disk` on shared hosting does not know the account quota.**
+  `disk_free_space()` reports the whole server volume there, so we do not show
+  such a number. Enter the quota in the module (or in the settings) and we will
+  start watching the usage.
 
-### Sekcja `security` (hub pyta raz na dobę, wynik żyje 10 minut)
+### The `security` section (Calmfox Watch asks once a day, the result lives for 10 minutes)
 
 `admin_count`, `admin_login`, `flow_context`, `debug_display`, `https`,
 `php_version`, `config_perms`, `dir_perms`, `encryption_key`, `dev_packages`,
 `pending_updates`.
 
-Konta administratorów czytamy przez repozytoria Flow Security, a nie zapytaniem
-SQL, bo rola administratora bywa **dziedziczona** przez rolę własną klienta.
-Zapytanie po nazwie roli przegapiłoby takie konto, czyli dokładnie to, na czym
-zależy atakującemu.
+We read administrator accounts through the Flow Security repositories, not with
+an SQL query, because the administrator role is sometimes **inherited** by a
+customer's own role. A query by role name would miss such an account, which is
+exactly what an attacker is after.
 
-Na zewnątrz nie idą loginy. Idzie liczba kont, jednokierunkowy odcisk ich zbioru
-(HMAC z sekretu instalacji) i data najnowszego konta. Hub wykrywa ZMIANĘ składu,
-nie tożsamość. Gdy kont nie da się odczytać (padnięta baza), pole `signals`
-znika z payloadu w całości: pusty zbiór wyglądałby jak podmiana wszystkich kont
-naraz i otworzyłby incydent o przejęciu strony w chwili, gdy padła tylko baza.
+Logins never leave the site. What goes out is the number of accounts, a one-way
+fingerprint of their set (an HMAC keyed with the installation secret) and the
+date of the newest account. Calmfox Watch detects a CHANGE in the set, not
+identities. When the accounts cannot be read (database down), the `signals`
+field disappears from the payload entirely: an empty set would look like all
+accounts being replaced at once and would open a site-takeover incident at a
+moment when only the database went down.
 
-## Historia zmian wersji
+## Version change history
 
-Neos nie ma hooka aktualizacji: pakiety wymienia Composer poza aplikacją.
-Dlatego robimy migawkę wersji z `vendor/composer/installed.php` (plus wersja PHP)
-i porównujemy ją przy każdym budowaniu sekcji `security`, czyli najwyżej co
-10 minut, oraz przy poleceniu `./flow calmfoxwatch:updates`.
+Neos has no update hook: Composer swaps packages outside the application. So we
+take a snapshot of versions from `vendor/composer/installed.php` (plus the PHP
+version) and compare it every time the `security` section is built, that is at
+most every 10 minutes, and when `./flow calmfoxwatch:updates` runs.
 
-Trzy konsekwencje, które trzeba znać:
+Three consequences you need to know about:
 
-1. **`at` to czas WYKRYCIA różnicy, nie czas wdrożenia.** Wdrożenie o 2:00
-   i pierwsze sprawdzenie o 7:30 dadzą wpis z godziną 7:30. Do zdania „awaria
-   zaczęła się godzinę po aktualizacji pakietu X" to wystarcza, a udawanie
-   dokładniejszego czasu byłoby zmyślaniem.
-2. **Historia zaczyna się od instalacji pakietu.** Pierwsze uzgodnienie zapisuje
-   tylko migawkę, bez wpisów. Wcześniejszych zmian nie da się odtworzyć.
-3. **`mode` zawsze `manual`, `by` zawsze puste.** Composer nie mówi nam, kto
-   i czym uruchomił wdrożenie, więc nie zgadujemy autora.
+1. **`at` is the time the difference was DETECTED, not the time of the
+   deployment.** A deployment at 2:00 and the first check at 7:30 produce an
+   entry stamped 7:30. For the sentence "the outage started an hour after
+   package X was updated" that is enough, and pretending to know a more precise
+   time would be making things up.
+2. **The history starts when the package is installed.** The first
+   reconciliation only stores a snapshot, with no entries. Earlier changes
+   cannot be reconstructed.
+3. **`mode` is always `manual`, `by` is always empty.** Composer does not tell
+   us who ran the deployment or with what, so we do not guess the author.
 
-`kind: core` dostają `neos/neos` i PHP (platforma), `kind: plugin` cała reszta.
-Bufor: 200 wpisów. Nazwy pakietów z WERSJAMI jadą **wyłącznie** w historii, bo
-lista „co i w jakiej wersji" jest gotową mapą dziur dla atakującego; w sekcji
-`health` przy liczbach jedzie sam SKŁAD zainstalowanych pakietów Flow i Neosa
-(`signals.activePlugins`, bez wersji i bez bibliotek). Bez nazw zdarzenie
-o zniknięciu pakietu brzmiałoby „coś się zmieniło", a wtedy nie da się na nie
-zareagować. Pola `signals.autoUpdates` nie wysyłamy w ogóle: Neos nie
-aktualizuje się sam, a wartość w tym polu znaczyłaby „sprawdzone".
+`neos/neos` and PHP (the platform) get `kind: core`, everything else gets
+`kind: plugin`. Buffer: 200 entries. Package names WITH VERSIONS travel **only**
+in the history, because a list of "what, and in which version" is a ready-made
+map of holes for an attacker; in the `health` section, next to the numbers,
+only the SET of installed Flow and Neos packages travels
+(`signals.activePlugins`, without versions and without libraries). Without the
+names, an event about a package disappearing would read "something changed",
+and you cannot react to that. We do not send the `signals.autoUpdates` field at
+all: Neos does not update itself, and a value in that field would mean
+"checked".
 
-## Własne sprawdzenia
+## Custom checks
 
-Odpowiednik filtra `calmfox_watch_health_checks` z wtyczki WordPressa. W Flow
-naturalne jest zbieranie implementacji interfejsu przez `ReflectionService`
-(dzieje się w czasie kompilacji, więc na produkcji nic nie kosztuje):
+The counterpart of the `calmfox_watch_health_checks` filter from the WordPress
+plugin. In Flow the natural way is to collect implementations of an interface
+through `ReflectionService` (this happens at compile time, so it costs nothing
+in production):
 
 ```php
 <?php
-namespace Twoj\Pakiet\Monitoring;
+namespace Your\Package\Monitoring;
 
 use Calmfox\Watch\Health\HealthCheckInterface;
 use Neos\Flow\Annotations as Flow;
@@ -404,78 +438,86 @@ class BrokerCheck implements HealthCheckInterface
     {
         $socket = @fsockopen('127.0.0.1', 5672, $number, $text, 2);
         if (!is_resource($socket)) {
-            return ['id' => 'rabbitmq', 'status' => 'fail', 'label' => 'Kolejka RabbitMQ',
-                    'detail' => 'Broker nie przyjmuje połączeń.'];
+            return ['id' => 'rabbitmq', 'status' => 'fail', 'label' => 'RabbitMQ queue',
+                    'detail' => 'The broker is not accepting connections.'];
         }
         fclose($socket);
 
-        return ['id' => 'rabbitmq', 'status' => 'ok', 'label' => 'Kolejka RabbitMQ'];
+        return ['id' => 'rabbitmq', 'status' => 'ok', 'label' => 'RabbitMQ queue'];
     }
 }
 ```
 
-Po dodaniu klasy: `./flow flow:cache:flush`. Nasze sprawdzenia idą pierwsze
-w ustalonej kolejności, obce po nich alfabetycznie po nazwie klasy.
+After adding the class: `./flow flow:cache:flush`. Our checks run first in a
+fixed order, third-party ones follow alphabetically by class name.
 
-Klasa nie może być `final`: Flow opakowuje wstrzykiwane obiekty klasą
-pośredniczącą przez dziedziczenie, a finalnej nie da się odziedziczyć.
+The class must not be `final`: Flow wraps injected objects in a proxy class
+through inheritance, and a final class cannot be extended.
 
-Dwie zasady dla własnych sprawdzeń:
+Two rules for custom checks:
 
-1. **Zwróć `null`, gdy usługi na tej instalacji nie ma.** Nie wysyłamy „ok"
-   o czymś, czego nie ma.
-2. **Trzymaj krótki, twardy limit czasu.** Wynik wchodzi w odpowiedź adresu
-   odpytywanego co minutę.
+1. **Return `null` when the service does not exist on this installation.** We do
+   not send an "ok" about something that is not there.
+2. **Keep a short, hard timeout.** The result goes into the response of an
+   endpoint polled every minute.
 
-Identyfikatory spoza katalogu z kontraktu panel pokaże z etykietą z payloadu
-i notką „usługa dopięta własnym rozszerzeniem".
+Ids outside the contract's catalogue are shown by the Calmfox Watch panel with
+the label from the payload and the note "service added by a custom extension".
 
-## Prywatność
+## Privacy
 
-Do Calmfox jadą: domena strony, adres e-mail podany przy zakładaniu konta oraz
-dane diagnostyczne opisane wyżej (statusy usług, wersje, liczby zaległych
-aktualizacji, historia zmian wersji, liczba kont administratorów i odcisk ich
-zbioru, skład zainstalowanych pakietów Flow i Neosa wraz z odciskiem). Nie jadą:
-treści, dane użytkowników, loginy, hasła. Adres kontrolny bez klucza odpowiada 403.
+What goes to Calmfox: the site domain, the e-mail address given when the account
+was created, and the diagnostic data described above (service statuses,
+versions, numbers of pending updates, version change history, the number of
+administrator accounts and the fingerprint of their set, the set of installed
+Flow and Neos packages together with its fingerprint). What does not: content,
+user data, logins, passwords. Without the key the health endpoint answers 403.
 
-## Rozłączenie
+## Disconnecting
 
-`./flow calmfoxwatch:disconnect` (albo przycisk w module) mówi hubowi wprost,
-że kończymy. Robimy to świadomie, zamiast zostawiać hubowi głuchy adres:
-milczenie pakietu hub traktuje jak sygnał i po trzech nieudanych odpytaniach
-otwiera zdarzenie. Wyciszenie monitoringu bywa pierwszym krokiem po przejęciu
-panelu, więc klient ma o tym wiedzieć.
+`./flow calmfoxwatch:disconnect` (or the button in the module) tells Calmfox
+Watch outright that we are done. We do this deliberately instead of leaving
+Calmfox Watch with a dead URL: it treats the package's silence as a signal and
+opens an incident after three failed polls. Silencing the monitoring is often
+the first step after a backend takeover, so the customer should know about it.
 
-Rozłączenie wymaga sekretu z adresu kontrolnego, nie samego klucza
-instalacyjnego: klucz jest jawny.
+Disconnecting requires the secret from the health endpoint URL, not just the
+installation key: the key is not secret.
 
-## Próbki payloadu
+## Payload samples
 
-`Documentation/sample-health.json` i `Documentation/sample-security.json` są
-wyjściem naszego buildera (`Documentation/generate-samples.php`), nie plikami
-pisanymi ręcznie. Hub opiera na nich test kontraktowy, a plik pisany z pamięci
-zestarzałby się przy pierwszej zmianie kształtu payloadu.
+`Documentation/sample-health.json` and `Documentation/sample-security.json` are
+the output of our builder (`Documentation/generate-samples.php`), not
+hand-written files. Calmfox Watch bases a contract test on them, and a file
+written from memory would go stale with the first change to the payload shape.
 
-Po zmianie payloadu: `php Documentation/generate-samples.php`.
+After changing the payload: `php Documentation/generate-samples.php`.
 
-## Testy
+## Tests
 
-Rdzeń pakietu (`Classes/Core`) jest świadomie bez żadnej zależności od Flow:
-normalizacja i agregacja sprawdzeń, podpis odpowiedzi, rotacja sekretu, różnica
-migawek wersji, odcisk kont, budowa payloadu. Dzięki temu testy chodzą bez
-bootstrapu frameworka, bez bazy i bez sieci:
+The package core (`Classes/Core`) deliberately has no dependency on Flow at all:
+normalisation and aggregation of checks, response signing, secret rotation,
+version snapshot diffing, the account fingerprint, payload building. Thanks to
+that the tests run without bootstrapping the framework, without a database and
+without the network:
+
+The tests ship their own autoloader (`tests/bootstrap.php`), so any PHPUnit 10 or
+later will do, with no `composer install`:
 
 ```bash
-cd neos-plugin/Calmfox.Watch
-../../api/vendor/bin/phpunit -c phpunit.xml.dist
+phpunit -c phpunit.xml.dist
 ```
 
-Sprawdzenia zależne od Flow (`Classes/Health`, `Classes/Security`) testuje się
-na żywej instalacji poleceniem `./flow calmfoxwatch:health`.
+Checks that depend on Flow (`Classes/Health`, `Classes/Security`) are tested on
+a live installation with `./flow calmfoxwatch:health`.
 
-## Wersja pakietu
+## Package version
 
-Jedno źródło prawdy: stała `Calmfox\Watch\Core\Version::NUMBER`. `composer.json`
-świadomie NIE ma pola `version` (Composer wylicza je z tagów repozytorium,
-a ręcznie wpisane pole zawsze prędzej czy później się rozjeżdża). Skrypt paczki
-`scripts/build-neos-zip.sh` czyta tę stałą.
+A single source of truth: the `Calmfox\Watch\Core\Version::NUMBER` constant.
+`composer.json` deliberately has NO `version` field (Composer derives it from
+repository tags, and a hand-written field always drifts sooner or later). The
+script that builds the `calmfox-watch-neos.zip` archive reads the same constant.
+
+## Licence
+
+GPL-3.0-or-later, see [LICENSE](LICENSE).

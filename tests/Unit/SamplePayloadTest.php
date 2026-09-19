@@ -10,7 +10,7 @@ use PHPUnit\Framework\TestCase;
 
 /**
  * Próbki z Documentation/ są tym, na czym hub opiera test kontraktowy. Ten test
- * pilnuje, żeby leżało w nich dokładnie to, co kontrakt (WTYCZKI.md, sekcja 7)
+ * pilnuje, żeby leżało w nich dokładnie to, co kontrakt
  * przewiduje dla Neosa: identyfikatory sprawdzeń są częścią umowy, bo panel
  * opisuje każde z nich własnym tekstem.
  */
@@ -114,7 +114,7 @@ final class SamplePayloadTest extends TestCase
         }
     }
 
-    /** Teksty widoczne dla klienta nie mogą zawierać znaku pauzy (JEZYK.md). */
+    /** Teksty widoczne dla klienta nie mogą zawierać znaku pauzy. */
     public function testSampleTextsAvoidEmDashes(): void
     {
         foreach (['sample-health.json', 'sample-security.json'] as $name) {

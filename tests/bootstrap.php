@@ -5,7 +5,7 @@ declare(strict_types=1);
 /**
  * Autoloader testów. Świadomie własny, a nie composerowy: rdzeń pakietu nie
  * zależy od Flow ani od niczego z vendora, więc testy mają się uruchamiać
- * wszędzie, także tam, gdzie nikt nie robił „composer install" (potok CI huba,
+ * wszędzie, także tam, gdzie nikt nie robił „composer install" (potok CI,
  * maszyna bez sieci).
  *
  * Ładujemy wyłącznie Classes/ i tests/. Gdyby test sięgnął po klasę zależną
