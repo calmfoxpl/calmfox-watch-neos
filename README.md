@@ -23,6 +23,24 @@ What the package does **not** do, and will not promise: it does not scan for
 malicious code, does not compute file checksums, does not make backups and does
 not ship event logs.
 
+## About Calmfox Watch
+
+[Calmfox Watch](https://watch.calmfox.net) is a website monitoring service. It
+checks availability, security, software updates, content and performance from
+the outside and rolls the results into a single site health score from 0 to
+100, with an explanation of every point lost and what to do about it. It also
+watches domain and TLS certificate expiry, DNS changes and broken links, and
+sends an alert once a problem is confirmed.
+
+On its own, Calmfox Watch sees the site the way a visitor does. This package
+adds the view from inside Neos: the state of the services behind the site,
+configuration hygiene and a history of package changes. No backend passwords
+are shared with the service.
+
+- Calmfox Watch: <https://watch.calmfox.net>
+- This package on neos.io: <https://www.neos.io/download-and-extend/packages/calmfox/calmfox-watch-neos.html>
+- Packagist: <https://packagist.org/packages/calmfox/watch-neos>
+
 ---
 
 ## Requirements and version range

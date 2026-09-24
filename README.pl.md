@@ -23,6 +23,23 @@ Czego pakiet **nie** robi i obiecywać nie będzie: nie skanuje złośliwego kod
 nie liczy sum kontrolnych plików, nie robi kopii zapasowych i nie wysyła
 dzienników zdarzeń.
 
+## O Calmfox Watch
+
+[Calmfox Watch](https://watch.calmfox.net) to usługa monitoringu stron. Z
+zewnątrz sprawdza dostępność, bezpieczeństwo, aktualność oprogramowania,
+działanie treści i szybkość, a wyniki łączy w jedną ocenę kondycji strony od 0
+do 100, z wyjaśnieniem każdego straconego punktu i zaleceniem, co zrobić.
+Pilnuje też ważności domeny i certyfikatu, zmian w DNS i niedziałających
+odnośników, a po potwierdzeniu problemu wysyła powiadomienie.
+
+Sam Calmfox Watch widzi stronę tak jak odwiedzający. Ten pakiet dodaje widok z
+wnętrza Neosa: stan usług za stroną, higienę konfiguracji i historię zmian
+pakietów. Usługa nie dostaje żadnych haseł do panelu administracyjnego.
+
+- Calmfox Watch: <https://watch.calmfox.net>
+- Pakiet w katalogu neos.io: <https://www.neos.io/download-and-extend/packages/calmfox/calmfox-watch-neos.html>
+- Packagist: <https://packagist.org/packages/calmfox/watch-neos>
+
 ---
 
 ## Wymagania i zakres wersji
