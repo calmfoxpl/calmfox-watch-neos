@@ -52,7 +52,7 @@ final class SamplePayloadTest extends TestCase
     {
         foreach (['sample-health.json', 'sample-security.json'] as $name) {
             $payload = $this->sample($name);
-            self::assertSame(1, $payload['schema'], $name);
+            self::assertSame('sample-security.json' === $name ? 2 : 1, $payload['schema'], $name);
             self::assertSame(Version::NUMBER, $payload['plugin'], $name);
         }
     }
@@ -104,6 +104,20 @@ final class SamplePayloadTest extends TestCase
 
         self::assertArrayNotHasKey('site', $payload);
         self::assertArrayNotHasKey('signals', $payload);
+    }
+
+    public function testInventoryTravelsOnlyInSecurityAndStaysInsideTheContract(): void
+    {
+        self::assertArrayNotHasKey('inventory', $this->sample('sample-health.json'));
+
+        $inventory = $this->sample('sample-security.json')['inventory'];
+        self::assertNotEmpty($inventory);
+        self::assertNotContains('klient/strona', array_column($inventory, 'name'), 'Paczka główna to projekt klienta, nie komponent.');
+        foreach ($inventory as $entry) {
+            self::assertSame('package', $entry['type']);
+            self::assertMatchesRegularExpression('#^[a-z0-9][a-z0-9._-]{0,99}/[a-z0-9][a-z0-9._-]{0,99}$#', $entry['name'], 'Nazwa poza wzorcem huba wypada ze spisu.');
+            self::assertMatchesRegularExpression('/^[0-9A-Za-z][0-9A-Za-z.+_-]{0,63}$/', $entry['version'], 'Wersja poza wzorcem huba wypada ze spisu.');
+        }
     }
 
     public function testSampleStatusesMatchTheirChecks(): void

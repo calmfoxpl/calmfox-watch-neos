@@ -1,6 +1,6 @@
 {
-    "schema": 1,
-    "plugin": "1.3.1",
+    "schema": 2,
+    "plugin": "1.4.0",
     "status": "warn",
     "checks": [
         {
@@ -130,6 +130,23 @@
             "at": "2026-07-02T05:12:00+00:00",
             "mode": "manual",
             "by": null
+        }
+    ],
+    "inventory": [
+        {
+            "type": "package",
+            "name": "flowpack/jobqueue-common",
+            "version": "2.2.0"
+        },
+        {
+            "type": "package",
+            "name": "neos/flow",
+            "version": "8.3.14"
+        },
+        {
+            "type": "package",
+            "name": "neos/neos",
+            "version": "8.3.14"
         }
     ]
 }

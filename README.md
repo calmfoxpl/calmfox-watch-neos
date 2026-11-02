@@ -434,9 +434,13 @@ Three consequences you need to know about:
 
 `neos/neos` and PHP (the platform) get `kind: core`, everything else gets
 `kind: plugin`. Buffer: 200 entries. Package names WITH VERSIONS travel **only**
-in the history, because a list of "what, and in which version" is a ready-made
-map of holes for an attacker; in the `health` section, next to the numbers,
-only the SET of installed Flow and Neos packages travels
+in the `security` section: in the history and in the component inventory
+(`inventory`), which the panel uses to detect known vulnerabilities. A list of
+"what, and in which version" is a map for an attacker, and that is a deliberate
+price: whoever obtains the secret health endpoint will see it. That is why the
+panel accepts the inventory only from a signed response, does not show it on the
+status page and does not send it back to the package. In the `health` section,
+next to the numbers, only the SET of installed Flow and Neos packages travels
 (`signals.activePlugins`, without versions and without libraries). Without the
 names, an event about a package disappearing would read "something changed",
 and you cannot react to that. We do not send the `signals.autoUpdates` field at
@@ -496,7 +500,8 @@ What goes to Calmfox: the site domain, the e-mail address given when the account
 was created, and the diagnostic data described above (service statuses,
 versions, numbers of pending updates, version change history, the number of
 administrator accounts and the fingerprint of their set, the set of installed
-Flow and Neos packages together with its fingerprint). What does not: content,
+Flow and Neos packages together with its fingerprint, the inventory of all installed
+packages with versions used to detect known vulnerabilities). What does not: content,
 user data, logins, passwords. Without the key the health endpoint answers 403.
 
 ## Disconnecting

@@ -410,9 +410,12 @@ Trzy konsekwencje, które trzeba znać:
    i czym uruchomił wdrożenie, więc nie zgadujemy autora.
 
 `kind: core` dostają `neos/neos` i PHP (platforma), `kind: plugin` cała reszta.
-Bufor: 200 wpisów. Nazwy pakietów z WERSJAMI jadą **wyłącznie** w historii, bo
-lista „co i w jakiej wersji" jest gotową mapą dziur dla atakującego; w sekcji
-`health` przy liczbach jedzie sam SKŁAD zainstalowanych pakietów Flow i Neosa
+Bufor: 200 wpisów. Nazwy pakietów z WERSJAMI jadą **wyłącznie** w sekcji `security`:
+w historii i w spisie komponentów (`inventory`), z którego panel wykrywa znane
+podatności. Lista „co i w jakiej wersji" jest mapą ataku i to świadoma cena: kto
+zdobędzie sekretny adres kontrolny, zobaczy ją. Dlatego panel przyjmuje spis tylko
+z podpisanej odpowiedzi, nie pokazuje go na stronie statusu i nie odsyła do pakietu.
+W sekcji `health` przy liczbach jedzie sam SKŁAD zainstalowanych pakietów Flow i Neosa
 (`signals.activePlugins`, bez wersji i bez bibliotek). Bez nazw zdarzenie
 o zniknięciu pakietu brzmiałoby „coś się zmieniło", a wtedy nie da się na nie
 zareagować. Pola `signals.autoUpdates` nie wysyłamy w ogóle: Neos nie
@@ -469,7 +472,8 @@ i notką „usługa dopięta własnym rozszerzeniem".
 Do Calmfox jadą: domena strony, adres e-mail podany przy zakładaniu konta oraz
 dane diagnostyczne opisane wyżej (statusy usług, wersje, liczby zaległych
 aktualizacji, historia zmian wersji, liczba kont administratorów i odcisk ich
-zbioru, skład zainstalowanych pakietów Flow i Neosa wraz z odciskiem). Nie jadą:
+zbioru, skład zainstalowanych pakietów Flow i Neosa wraz z odciskiem, spis wszystkich
+zainstalowanych pakietów z wersjami do wykrywania znanych podatności). Nie jadą:
 treści, dane użytkowników, loginy, hasła. Adres kontrolny bez klucza odpowiada 403.
 
 ## Rozłączenie

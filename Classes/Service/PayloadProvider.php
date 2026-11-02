@@ -110,7 +110,7 @@ class PayloadProvider
             // Brak zapisu historii nie może wywrócić całej sekcji.
         }
 
-        $payload = PayloadBuilder::security($this->securityChecks->run(), $this->versionHistory->all());
+        $payload = PayloadBuilder::security($this->securityChecks->run(), $this->versionHistory->all(), $this->packageVersions->inventory());
         $this->cache->set(Cache::SECURITY, $payload, 600);
 
         return $payload;

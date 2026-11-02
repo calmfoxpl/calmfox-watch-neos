@@ -94,6 +94,15 @@ final class PayloadBuilderTest extends TestCase
         self::assertSame('neos/neos', $payload['history'][0]['name']);
     }
 
+    public function testInventoryIsOmittedWhenUnknown(): void
+    {
+        $inventory = [['type' => 'package', 'name' => 'acme/lib', 'version' => '2.1.3']];
+
+        self::assertSame(2, PayloadBuilder::security([], [])['schema']);
+        self::assertSame($inventory, PayloadBuilder::security([], [], $inventory)['inventory']);
+        self::assertArrayNotHasKey('inventory', PayloadBuilder::security([], []), 'Pusta lista znaczyłaby „sprawdzone, nic nie ma".');
+    }
+
     public function testSecurityHistoryIsCappedAtTwoHundred(): void
     {
         $history = [];

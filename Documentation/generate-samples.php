@@ -15,6 +15,7 @@ declare(strict_types=1);
  * co na produkcji, a wersje pól i kolejność kluczy pochodzą z kodu.
  */
 
+use Calmfox\Watch\Core\Inventory;
 use Calmfox\Watch\Core\PayloadBuilder;
 
 spl_autoload_register(static function (string $class): void {
@@ -96,7 +97,15 @@ $security = PayloadBuilder::security($securityChecks, [
         'at' => '2026-08-18T21:35:00+00:00', 'mode' => 'manual', 'by' => null],
     ['kind' => 'core', 'name' => 'PHP', 'from' => '8.2.20', 'to' => '8.3.14',
         'at' => '2026-07-02T05:12:00+00:00', 'mode' => 'manual', 'by' => null],
-]);
+], Inventory::fromInstalled([
+    'root' => ['name' => 'klient/strona'],
+    'versions' => [
+        'klient/strona' => ['pretty_version' => 'dev-main', 'version' => 'dev-main'],
+        'flowpack/jobqueue-common' => ['pretty_version' => '2.2.0', 'version' => '2.2.0.0'],
+        'neos/flow' => ['pretty_version' => '8.3.14', 'version' => '8.3.14.0'],
+        'neos/neos' => ['pretty_version' => '8.3.14', 'version' => '8.3.14.0'],
+    ],
+]));
 
 $flags = \JSON_PRETTY_PRINT | \JSON_UNESCAPED_SLASHES | \JSON_UNESCAPED_UNICODE;
 file_put_contents(__DIR__.'/sample-health.json', json_encode($health, $flags)."\n");

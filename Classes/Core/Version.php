@@ -13,5 +13,5 @@ namespace Calmfox\Watch\Core;
  */
 final class Version
 {
-    public const NUMBER = '1.3.1';
+    public const NUMBER = '1.4.0';
 }

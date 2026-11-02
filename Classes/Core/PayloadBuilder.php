@@ -20,6 +20,9 @@ final class PayloadBuilder
 
     public const SCHEMA = 1;
 
+    /** Od schema 2 sekcja `security` może nieść spis komponentów (`inventory`). */
+    public const SECURITY_SCHEMA = 2;
+
     /**
      * `signals` POMIJAMY, gdy nie udało się odczytać kont (padnięta baza).
      * To nie jest kosmetyka: hub porównuje odciski między odpytaniami, więc
@@ -54,20 +57,26 @@ final class PayloadBuilder
     /**
      * @param iterable<mixed>                $checks
      * @param list<array<string, mixed>> $history
+     * @param list<array<string, string>>|null $inventory null = bez pola: panel powie „brak spisu"
      *
      * @return array<string, mixed>
      */
-    public static function security(iterable $checks, array $history): array
+    public static function security(iterable $checks, array $history, ?array $inventory = null): array
     {
         $normalized = CheckNormalizer::normalize($checks);
 
-        return [
-            'schema' => self::SCHEMA,
+        $payload = [
+            'schema' => self::SECURITY_SCHEMA,
             'plugin' => Version::NUMBER,
             'status' => CheckNormalizer::aggregate($normalized),
             'checks' => $normalized,
             'history' => \array_slice(array_values($history), 0, InstallationState::HISTORY_MAX),
         ];
+        if (null !== $inventory) {
+            $payload['inventory'] = $inventory;
+        }
+
+        return $payload;
     }
 
     /**

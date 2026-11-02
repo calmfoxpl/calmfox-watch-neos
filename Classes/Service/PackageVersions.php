@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Calmfox\Watch\Service;
 
+use Calmfox\Watch\Core\Inventory;
 use Neos\Flow\Annotations as Flow;
 
 /**
@@ -54,10 +55,10 @@ class PackageVersions
     }
 
     /**
-     * Nazwy zainstalowanych ROZSZERZEŃ, czyli pakietów Flow i Neosa. Świadomie
-     * bez bibliotek: spis wszystkiego, co leży w zależnościach, byłby gotowym
-     * rekonesansem, a wartość ma tu wyłącznie to, co dokłada stronie funkcje
-     * i co ktoś może z niej zdjąć. Wersji nie wysyłamy, tylko skład.
+     * Nazwy zainstalowanych ROZSZERZEŃ, czyli pakietów Flow i Neosa, do szybkiej
+     * sekcji `health`. Świadomie bez bibliotek i bez wersji: wartość ma tu wyłącznie
+     * to, co dokłada stronie funkcje i co ktoś może z niej zdjąć. Pełny spis z wersjami
+     * jedzie osobno, w sekcji `security` ({@see self::inventory()}).
      *
      * @return list<string> posortowane, bez duplikatów
      */
@@ -83,6 +84,16 @@ class PackageVersions
         sort($names);
 
         return $names;
+    }
+
+    /**
+     * Spis komponentów do sekcji `security`, patrz {@see Inventory}.
+     *
+     * @return list<array{type: string, name: string, version: string}>|null
+     */
+    public function inventory(): ?array
+    {
+        return Inventory::fromInstalled($this->installed());
     }
 
     /** Wersja platformy raportowana hubowi: sam Neos, a gdy go nie ma (czysty Flow) samo jądro. */
